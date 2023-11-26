@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <cassert>
 
 namespace lzss {
 
@@ -11,20 +12,26 @@ class lzss_symbol {
  public:
   lzss_symbol(lzss_symbol_type type, unsigned int value);
 
-  // XXX: Make all these getters inline.
+  auto get_type() const { return type_; }
+  auto get_value() const { return value_; }
 
-  lzss_symbol_type get_type() const;
-  unsigned int get_value() const;
-
-  unsigned int get_code() const;
-  unsigned int get_extra_bits() const;
-  unsigned int get_offset() const;
+  auto get_code() const { return code_; }
+  auto get_extra_bits() const {
+    assert(type_ != lzss_symbol_type::LITERAL &&
+           "literals do not have extra bits");
+    return extra_bits_;
+  }
+  auto get_offset() const {
+    assert(type_ != lzss_symbol_type::LITERAL &&
+           "literals do not have offsets");
+    return offset_;
+  }
 
  private:
   void lookup_code_table_data();
 
-  lzss_symbol_type type_;
-  unsigned int value_;
+  const lzss_symbol_type type_;
+  const unsigned int value_;
 
   unsigned int code_;
   unsigned int extra_bits_;

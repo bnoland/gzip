@@ -50,29 +50,6 @@ void lzss_symbol::lookup_code_table_data() {
   }
 }
 
-lzss_symbol_type lzss_symbol::get_type() const {
-  return type_;
-}
-
-unsigned int lzss_symbol::get_value() const {
-  return value_;
-}
-
-unsigned int lzss_symbol::get_code() const {
-  return code_;
-}
-
-unsigned int lzss_symbol::get_extra_bits() const {
-  assert(type_ != lzss_symbol_type::LITERAL &&
-         "literals do not have extra bits");
-  return extra_bits_;
-}
-
-unsigned int lzss_symbol::get_offset() const {
-  assert(type_ != lzss_symbol_type::LITERAL && "literals do not have offsets");
-  return offset_;
-}
-
 void lzss_symbol_list::add(const lzss_symbol& symbol) {
   list_.push_back(symbol);
 }
