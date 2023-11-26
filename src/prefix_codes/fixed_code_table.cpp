@@ -1,28 +1,10 @@
 #include "prefix_codes/fixed_code_table.hpp"
 
-#include <cassert>
-
 namespace prefix_codes {
 
 fixed_code_table::fixed_code_table() {
   init_length_literal_code_table();
   init_distance_code_table();
-}
-
-const fixed_code_table::entry& fixed_code_table::get_length_literal_entry(
-    unsigned int code) const {
-  assert(code < NUM_LENGTH_LITERAL_CODES &&
-         "searching for invalid length/literal code in fixed code table");
-
-  return length_literal_code_table_[code];
-}
-
-const fixed_code_table::entry& fixed_code_table::get_distance_entry(
-    unsigned int code) const {
-  assert(code < NUM_DISTANCE_CODES &&
-         "searching for invalid distance code in fixed code table");
-
-  return distance_code_table_[code];
 }
 
 void fixed_code_table::init_length_literal_code_table() {

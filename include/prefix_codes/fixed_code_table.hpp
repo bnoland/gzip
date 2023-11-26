@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cassert>
+
 namespace prefix_codes {
 
 class fixed_code_table {
@@ -11,9 +13,16 @@ class fixed_code_table {
     unsigned int num_bits;
   };
 
-  // XXX: Make these inline?
-  const entry &get_length_literal_entry(unsigned int code) const;
-  const entry &get_distance_entry(unsigned int code) const;
+  const auto& get_length_literal_entry(unsigned int code) const {
+    assert(code < NUM_LENGTH_LITERAL_CODES &&
+           "searching for invalid length/literal code in fixed code table");
+    return length_literal_code_table_[code];
+  }
+  const auto& get_distance_entry(unsigned int code) const {
+    assert(code < NUM_DISTANCE_CODES &&
+           "searching for invalid distance code in fixed code table");
+    return distance_code_table_[code];
+  }
 
  private:
   void init_length_literal_code_table();
