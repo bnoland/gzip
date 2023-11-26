@@ -40,8 +40,6 @@ class lzss_symbol {
 
 extern const lzss_symbol END_OF_BLOCK_MARKER;
 
-// XXX: Just use std::list<lzss_symbol> instead. Provide a function that returns
-// a string representation of such a list.
 class lzss_symbol_list {
  public:
   void add(const lzss_symbol& symbol);
