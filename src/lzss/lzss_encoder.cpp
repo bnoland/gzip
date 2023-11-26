@@ -39,14 +39,6 @@ void lzss_encoder::encode(std::string_view input_buffer) {
   }
 }
 
-const lzss_symbol_list& lzss_encoder::get_symbol_list() const {
-  return symbol_list_;
-}
-
-const lzss_string_table& lzss_encoder::get_string_table() const {
-  return string_table_;
-}
-
 void lzss_encoder::output_back_reference(unsigned int length,
                                          unsigned int distance) {
   symbol_list_.add({lzss_symbol_type::LENGTH, length});

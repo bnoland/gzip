@@ -9,12 +9,10 @@ namespace lzss {
 
 class lzss_encoder {
  public:
-  // XXX: Just return the symbol list immediately from encode().
   void encode(std::string_view input_buffer);
 
-  // XXX: These can be inline.
-  const lzss_symbol_list& get_symbol_list() const;
-  const lzss_string_table& get_string_table() const;
+  const auto& get_symbol_list() const { return symbol_list_; }
+  const auto& get_string_table() const { return string_table_; }
 
  private:
   void output_back_reference(unsigned int length, unsigned int distance);
