@@ -61,6 +61,20 @@ lzss_encoder_test = executable(
 
 test('lzss_encoder_test', lzss_encoder_test)
 
+# --- Prefix Encoder / Decoder Tests ---
+
+prefix_code_encoder_test = executable(
+  'prefix_code_encoder_test',
+  sources : [
+    'test/prefix_codes/prefix_code_encoder_test.cpp',
+    'src/prefix_codes/prefix_code_encoder.cpp'
+  ],
+  include_directories : include_dir,
+  dependencies : catch2_dep
+)
+
+test('prefix_code_encoder_test', prefix_code_encoder_test)
+
 # --- Command-Line Tools ---
 
 executable(

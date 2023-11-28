@@ -4,6 +4,7 @@
 
 namespace prefix_codes {
 
+// XXX: Does this even need to be a class?
 class fixed_code_table {
  public:
   fixed_code_table();

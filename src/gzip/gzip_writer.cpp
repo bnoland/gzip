@@ -102,6 +102,7 @@ void gzip_writer::write_block_type_1(std::string_view input_buffer,
   auto symbol_list {lzss_encoder_.get_symbol_list()};
   symbol_list.add(lzss::END_OF_BLOCK_MARKER);
 
+  // XXX: Should outputting the codes be managed by the fixed code table class?
   for (const auto& symbol : symbol_list) {
     using enum lzss::lzss_symbol_type;
 
