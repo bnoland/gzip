@@ -9,7 +9,7 @@
 
 namespace prefix_codes {
 
-prefix_code_encoder::prefix_code_encoder(code_length max_code_length)
+prefix_code_encoder::prefix_code_encoder(unsigned int max_code_length)
     : max_code_length_ {max_code_length} {
   assert(max_code_length <= MAX_CODE_LENGTH_VALUE &&
          "max code length is too large");
@@ -42,7 +42,7 @@ void prefix_code_encoder::compute_code_length_table(
   std::sort(singletons.begin(), singletons.end(), compare);
 
   package_list packages {singletons};
-  for (code_length i {0}; i < max_code_length_ - 1; i++) {
+  for (unsigned int i {0}; i < max_code_length_ - 1; i++) {
     packages = merge(package(packages), singletons);
   }
 
