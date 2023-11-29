@@ -67,6 +67,3 @@ TEST_CASE("Generates valid code lengths when input has multiple symbols",
     }
   }
 }
-
-TEST_CASE("Generates correct canonical codes, as per RFC 1951",
-          "[prefix_code_encoder]") {}
