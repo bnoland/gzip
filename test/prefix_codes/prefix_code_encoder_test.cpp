@@ -33,10 +33,10 @@ TEST_CASE("Generates valid codes when input has multiple symbols",
           "[prefix_code_encoder]") {
   // clang-format off
   auto [frequencies, max_code_length] = GENERATE(
-    std::make_tuple(frequency_table{{0, 1}, {1, 1}, {1, 3}, {1, 5}, {1, 6}, {1, 11}, {1, 13}}, 3U),
-    std::make_tuple(frequency_table{{0, 1}, {1, 1}, {1, 3}, {1, 5}, {1, 6}, {1, 11}, {1, 13}}, 4U),
-    std::make_tuple(frequency_table{{0, 1}, {1, 1}, {1, 3}, {1, 5}, {1, 6}, {1, 11}, {1, 13}}, 5U),
-    std::make_tuple(frequency_table{{0, 1}, {1, 1}, {1, 3}, {1, 5}, {1, 6}, {1, 11}, {1, 13}}, 15U),
+    std::make_tuple(frequency_table{{0, 1}, {1, 1}, {2, 3}, {3, 5}, {4, 6}, {5, 11}, {6, 13}}, 3U),
+    std::make_tuple(frequency_table{{0, 1}, {1, 1}, {2, 3}, {3, 5}, {4, 6}, {5, 11}, {6, 13}}, 4U),
+    std::make_tuple(frequency_table{{0, 1}, {1, 1}, {2, 3}, {3, 5}, {4, 6}, {5, 11}, {6, 13}}, 5U),
+    std::make_tuple(frequency_table{{0, 1}, {1, 1}, {2, 3}, {3, 5}, {4, 6}, {5, 11}, {6, 13}}, 15U),
     std::make_tuple(frequency_table{{0, 1}, {1, 1}}, 1U)
   );
   // clang-format on

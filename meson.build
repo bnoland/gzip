@@ -83,6 +83,7 @@ executable(
     'src/cli/gzip.cpp',
     'src/bit_io/bit_writer.cpp',
     'src/prefix_codes/fixed_code_table.cpp',
+    'src/prefix_codes/prefix_code_encoder.cpp',
     'src/lzss/lzss_encoder.cpp',
     'src/lzss/lzss_string_table.cpp',
     'src/lzss/lzss_symbol.cpp',

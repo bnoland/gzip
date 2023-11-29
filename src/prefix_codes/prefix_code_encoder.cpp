@@ -5,6 +5,7 @@
 #include <cmath>
 #include <memory>
 #include <optional>
+#include <map>
 #include <unordered_map>
 
 namespace prefix_codes {
@@ -52,7 +53,30 @@ void prefix_code_encoder::compute_code_length_table(
 }
 
 void prefix_code_encoder::compute_code_table() {
-  // XXX: Use algorithm from RFC to compute canonical codes.
+  std::map<unsigned int, unsigned int> length_counts {};
+
+  for (auto [symbol, length] : code_length_table_) {
+    if (!length_counts.contains(length)) {
+      length_counts.insert({length, 0});
+    }
+    length_counts.at(length)++;
+  }
+
+  std::unordered_map<unsigned int, unsigned int> next_code {};
+  unsigned int code {0};
+
+  for (auto [length, count] : length_counts) {
+    if (length_counts.contains(length - 1)) {
+      code = (code + length_counts.at(length - 1)) << 1;
+    }
+    next_code.insert({length, code});
+  }
+
+  for (auto [symbol, length] : code_length_table_) {
+    assert(length > 0 && "got a zero length when generating codes");
+    code_table_.insert({symbol, next_code.at(length)});
+    next_code.at(length)++;
+  }
 }
 
 void prefix_code_encoder::expand_package(package_node_ptr package) {
