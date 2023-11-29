@@ -24,7 +24,7 @@ void prefix_code_encoder::encode(const frequency_table& frequencies) {
 void prefix_code_encoder::compute_code_length_table(
     const frequency_table& frequencies) {
   if (frequencies.size() == 1) {
-    code_length_table_ = {{frequencies.at(0), 1}};
+    code_length_table_ = {{frequencies.begin()->first, 1}};
     return;
   }
 
