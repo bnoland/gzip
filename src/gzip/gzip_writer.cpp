@@ -126,10 +126,10 @@ void gzip_writer::write_block_type_1(std::string_view input_buffer,
       continue;
     }
 
-    auto extraBits {symbol.get_extra_bits()};
-    if (extraBits > 0) {
+    auto extra_bits {symbol.get_extra_bits()};
+    if (extra_bits > 0) {
       auto offset {symbol.get_offset()};
-      bit_writer_.put_bits(offset, extraBits);
+      bit_writer_.put_bits(offset, extra_bits);
     }
   }
 }
