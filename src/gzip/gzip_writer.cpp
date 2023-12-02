@@ -7,7 +7,7 @@
 #include <string_view>
 #include <unordered_map>
 
-// XXX: Remove later. Next time use a debugger, you degenerate.
+// XXX: Remove later.
 #include <iostream>
 
 namespace gzip {
@@ -106,7 +106,8 @@ void gzip_writer::write_block_type_1(std::string_view input_buffer,
   auto symbol_list {lzss_encoder_.get_symbol_list()};
   symbol_list.add(lzss::END_OF_BLOCK_MARKER);
 
-  // XXX: Should outputting the codes be managed by the fixed code table class?
+  // XXX: Should outputting the codes be managed by the fixed code table
+  // class?
   for (const auto& symbol : symbol_list) {
     using enum lzss::lzss_symbol_type;
 
@@ -190,8 +191,7 @@ void gzip_writer::write_block_type_2(std::string_view input_buffer,
 
   std::vector<unsigned int> code_length_buffer {};
 
-  const unsigned int NUM_LENGTH_LITERAL_CODES {286};
-  for (unsigned int code {0}; code < NUM_LENGTH_LITERAL_CODES; code++) {
+  for (unsigned int code {0}; code <= 285; code++) {
     if (length_literal_lengths.contains(code)) {
       code_length_buffer.push_back(length_literal_lengths.at(code));
     } else {
@@ -199,8 +199,7 @@ void gzip_writer::write_block_type_2(std::string_view input_buffer,
     }
   }
 
-  const unsigned int NUM_DISTANCE_CODES {30};
-  for (unsigned int code {0}; code < NUM_DISTANCE_CODES; code++) {
+  for (unsigned int code {0}; code <= 29; code++) {
     if (distance_lengths.contains(code)) {
       code_length_buffer.push_back(distance_lengths.at(code));
     } else {
@@ -209,7 +208,7 @@ void gzip_writer::write_block_type_2(std::string_view input_buffer,
   }
 
   // XXX: Compute HLIT + HDIST.
-  // XXX: Run specialized RLE on values in `code_lengths`.
+  // XXX: Run specialized RLE on values in `code_length_buffer`.
 
   std::unordered_map<unsigned int, unsigned int> cl_freqs {};
   for (auto code : code_length_buffer) {
@@ -224,10 +223,6 @@ void gzip_writer::write_block_type_2(std::string_view input_buffer,
 
   auto cl_lengths {cl_encoder.get_code_length_table()};
 
-  // for (auto [code, length] : cl_lengths) {
-  //   std::cout << code << ": " << length << std::endl;
-  // }
-
   const unsigned int CL_CODE_LENGTH_ORDER[] {16, 17, 18, 0, 8,  7, 9,  6, 10, 5,
                                              11, 4,  12, 3, 13, 2, 14, 1, 15};
 
@@ -241,44 +236,54 @@ void gzip_writer::write_block_type_2(std::string_view input_buffer,
     }
   }
 
-  // for (auto length : cl_code_length_buffer) {
-  //   std::cout << length << std::endl;
-  // }
-
   // XXX: Compute HCLEN.
 
-  const unsigned int NUM_CL_CODES {19};
-
   // XXX: HLIT, HDIST, and HCLEN will be computed dynamically in the future.
-  bit_writer_.put_bits(NUM_LENGTH_LITERAL_CODES - 257, 5);
-  bit_writer_.put_bits(NUM_DISTANCE_CODES - 1, 5);
-  bit_writer_.put_bits(NUM_CL_CODES - 4, 5);
+  bit_writer_.put_bits(286 - 257, 5);
+  bit_writer_.put_bits(30 - 1, 5);
+  bit_writer_.put_bits(19 - 4, 4);
 
-  // XXX: This is outputting the wrong stuff according to gzstat...
   for (auto length : cl_code_length_buffer) {
     bit_writer_.put_bits(length, 3);
   }
 
-  auto cl_code_table {cl_encoder.get_code_length_table()};
+  auto cl_code_table {cl_encoder.get_code_table()};
 
   for (auto length : code_length_buffer) {
-    bit_writer_.put_bits(cl_code_table.at(length), 7, false);
+    bit_writer_.put_bits(cl_code_table.at(length), cl_lengths.at(length),
+                         false);
   }
 
   auto length_literal_code_table {length_literal_encoder.get_code_table()};
   auto distance_code_table {distance_encoder.get_code_table()};
 
-  for (auto symbol : symbol_list) {
+  for (const auto& symbol : symbol_list) {
     using enum lzss::lzss_symbol_type;
 
-    if (symbol.get_type() == DISTANCE) {
-      auto code {distance_code_table.at(symbol.get_code())};
-      auto length {distance_lengths.at(symbol.get_code())};
-      bit_writer_.put_bits(code, length, false);
-    } else {
-      auto code {length_literal_code_table.at(symbol.get_code())};
-      auto length {length_literal_lengths.at(symbol.get_code())};
-      bit_writer_.put_bits(code, length, false);
+    switch (symbol.get_type()) {
+      case LITERAL:
+      case LENGTH: {
+        auto code {length_literal_code_table.at(symbol.get_code())};
+        auto length {length_literal_lengths.at(symbol.get_code())};
+        bit_writer_.put_bits(code, length, false);
+        break;
+      }
+      case DISTANCE: {
+        auto code {distance_code_table.at(symbol.get_code())};
+        auto length {distance_lengths.at(symbol.get_code())};
+        bit_writer_.put_bits(code, length, false);
+        break;
+      }
+    }
+
+    if (symbol.get_type() == LITERAL) {
+      continue;
+    }
+
+    auto extra_bits {symbol.get_extra_bits()};
+    if (extra_bits > 0) {
+      auto offset {symbol.get_offset()};
+      bit_writer_.put_bits(offset, extra_bits);
     }
   }
 }

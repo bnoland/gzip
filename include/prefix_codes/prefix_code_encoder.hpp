@@ -5,6 +5,7 @@
 #include <optional>
 #include <unordered_map>
 #include <vector>
+#include <map>
 
 namespace prefix_codes {
 
@@ -24,7 +25,7 @@ class prefix_code_encoder {
   void compute_code_table();
 
   using code_table = std::unordered_map<unsigned int, unsigned int>;
-  using code_length_table = std::unordered_map<unsigned int, unsigned int>;
+  using code_length_table = std::map<unsigned int, unsigned int>;
 
   static const unsigned int MAX_CODE_LENGTH_VALUE {
     std::numeric_limits<unsigned int>::digits};
