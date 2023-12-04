@@ -53,29 +53,24 @@ void prefix_code_encoder::compute_code_length_table(
 }
 
 void prefix_code_encoder::compute_code_table() {
-  std::map<unsigned int, unsigned int> length_counts {};
+  // XXX: Magic numbers...
 
+  unsigned int length_counts[15 + 1] {0};
   for (auto [symbol, length] : code_length_table_) {
-    if (!length_counts.contains(length)) {
-      length_counts.insert({length, 0});
-    }
-    length_counts.at(length)++;
+    length_counts[length]++;
   }
 
-  std::unordered_map<unsigned int, unsigned int> next_code {};
+  unsigned int next_code[15 + 1];
+
   unsigned int code {0};
-
-  for (auto [length, count] : length_counts) {
-    if (length_counts.contains(length - 1)) {
-      code = (code + length_counts.at(length - 1)) << 1;
-    }
-    next_code.insert({length, code});
+  for (unsigned int bits {1}; bits <= 15; bits++) {
+    code = (code + length_counts[bits - 1]) << 1;
+    next_code[bits] = code;
   }
 
   for (auto [symbol, length] : code_length_table_) {
-    assert(length > 0 && "got a zero length when generating codes");
-    code_table_.insert({symbol, next_code.at(length)});
-    next_code.at(length)++;
+    code_table_.insert({symbol, next_code[length]});
+    next_code[length]++;
   }
 }
 

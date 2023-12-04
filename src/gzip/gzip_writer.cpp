@@ -7,9 +7,6 @@
 #include <string_view>
 #include <unordered_map>
 
-// XXX: Remove later.
-#include <iostream>
-
 namespace gzip {
 
 gzip_writer::gzip_writer(std::istream& input, std::ostream& output)
