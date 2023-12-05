@@ -13,8 +13,7 @@ TEST_CASE("Can read back written bits", "[bit_writer][bit_reader]") {
   bit_io::bit_reader bit_reader {iss};
 
   // XXX: Can we improve how this lambda function is written?
-  auto recover_bits = [&](uint64_t value, int num_bits,
-                          bool low_bit_first = true) {
+  auto recover_bits = [&](uint64_t value, int num_bits, bool low_bit_first = true) {
     bit_writer.put_bits(value, num_bits, low_bit_first);
     bit_writer.finish();
     iss.str(oss.str());

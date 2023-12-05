@@ -18,8 +18,7 @@ class lzss_string_table {
   lzss_string_table(unsigned int max_chain_length = 10);
 
   void insert(std::string_view string, unsigned int position);
-  std::optional<back_reference> get_back_reference(
-      std::string_view string) const;
+  std::optional<back_reference> get_back_reference(std::string_view string) const;
 
   unsigned int get_average_chain_length() const;
   std::string to_string() const;

@@ -7,8 +7,7 @@
 #include <string>
 #include <vector>
 
-void set_stream_bytes(std::istringstream& iss,
-                      std::initializer_list<uint8_t> bytes) {
+void set_stream_bytes(std::istringstream& iss, std::initializer_list<uint8_t> bytes) {
   std::vector<uint8_t> buffer {bytes};
   std::string content {buffer.begin(), buffer.end()};
   iss.str(content);

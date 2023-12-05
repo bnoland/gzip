@@ -10,10 +10,8 @@
 
 namespace prefix_codes {
 
-prefix_code_encoder::prefix_code_encoder(unsigned int max_code_length)
-    : max_code_length_ {max_code_length} {
-  assert(max_code_length <= MAX_CODE_LENGTH_VALUE &&
-         "max code length is too large");
+prefix_code_encoder::prefix_code_encoder(unsigned int max_code_length) : max_code_length_ {max_code_length} {
+  assert(max_code_length <= MAX_CODE_LENGTH_VALUE && "max code length is too large");
 }
 
 void prefix_code_encoder::encode(const frequency_table& frequencies) {
@@ -21,24 +19,20 @@ void prefix_code_encoder::encode(const frequency_table& frequencies) {
   compute_code_table();
 }
 
-void prefix_code_encoder::compute_code_length_table(
-    const frequency_table& frequencies) {
+void prefix_code_encoder::compute_code_length_table(const frequency_table& frequencies) {
   if (frequencies.size() == 1) {
     code_length_table_ = {{frequencies.begin()->first, 1}};
     return;
   }
 
-  assert(max_code_length_ >= std::ceil(std::log2(frequencies.size())) &&
-         "max code length is too small");
+  assert(max_code_length_ >= std::ceil(std::log2(frequencies.size())) && "max code length is too small");
 
   package_list singletons {};
   for (auto [symbol, freq] : frequencies) {
     singletons.push_back(std::make_shared<package_node>(symbol, freq));
   }
 
-  auto compare = [](const auto& lhs, const auto& rhs) {
-    return lhs->weight < rhs->weight;
-  };
+  auto compare = [](const auto& lhs, const auto& rhs) { return lhs->weight < rhs->weight; };
 
   std::sort(singletons.begin(), singletons.end(), compare);
 
@@ -76,8 +70,7 @@ void prefix_code_encoder::compute_code_table() {
 
 void prefix_code_encoder::expand_package(package_node_ptr package) {
   if (package->left == nullptr && package->right == nullptr) {
-    assert(package->symbol.has_value() &&
-           "package has leaf node with no symbol");
+    assert(package->symbol.has_value() && "package has leaf node with no symbol");
 
     auto symbol {package->symbol.value()};
     if (!code_length_table_.contains(symbol)) {
@@ -96,22 +89,19 @@ void prefix_code_encoder::expand_package(package_node_ptr package) {
   }
 }
 
-prefix_code_encoder::package_list prefix_code_encoder::package(
-    const package_list& list) {
+prefix_code_encoder::package_list prefix_code_encoder::package(const package_list& list) {
   package_list result {};
 
   for (unsigned int i {0}; i < list.size() / 2; i++) {
     auto left {list[2 * i]};
     auto right {list[2 * i + 1]};
-    result.push_back(std::make_shared<package_node>(
-        std::nullopt, left->weight + right->weight, left, right));
+    result.push_back(std::make_shared<package_node>(std::nullopt, left->weight + right->weight, left, right));
   }
 
   return result;
 }
 
-prefix_code_encoder::package_list prefix_code_encoder::merge(
-    const package_list& list1, const package_list& list2) {
+prefix_code_encoder::package_list prefix_code_encoder::merge(const package_list& list1, const package_list& list2) {
   package_list result {};
   unsigned int i {0}, j {0};
 

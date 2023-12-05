@@ -17,13 +17,11 @@ class lzss_symbol {
 
   auto get_code() const { return code_; }
   auto get_extra_bits() const {
-    assert(type_ != lzss_symbol_type::LITERAL &&
-           "literals do not have extra bits");
+    assert(type_ != lzss_symbol_type::LITERAL && "literals do not have extra bits");
     return extra_bits_;
   }
   auto get_offset() const {
-    assert(type_ != lzss_symbol_type::LITERAL &&
-           "literals do not have offsets");
+    assert(type_ != lzss_symbol_type::LITERAL && "literals do not have offsets");
     return offset_;
   }
 

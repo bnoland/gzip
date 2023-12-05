@@ -7,8 +7,7 @@
 #include <string>
 #include <vector>
 
-bool stream_bytes_equal(std::ostringstream& oss,
-                        std::initializer_list<uint8_t> bytes) {
+bool stream_bytes_equal(std::ostringstream& oss, std::initializer_list<uint8_t> bytes) {
   std::string content = oss.str();
   std::vector<uint8_t> buffer {content.begin(), content.end()};
   return buffer == std::vector<uint8_t> {bytes};

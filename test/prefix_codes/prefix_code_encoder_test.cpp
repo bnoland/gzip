@@ -9,8 +9,7 @@
 
 using frequency_table = prefix_codes::prefix_code_encoder::frequency_table;
 
-TEST_CASE("Generates single code of length 1 when input has single symbol",
-          "[prefix_code_encoder]") {
+TEST_CASE("Generates single code of length 1 when input has single symbol", "[prefix_code_encoder]") {
   // clang-format off
   auto [frequencies, max_code_length] = GENERATE(
     std::make_tuple(frequency_table{{'a', 1}}, 1U),
@@ -32,8 +31,7 @@ TEST_CASE("Generates single code of length 1 when input has single symbol",
   REQUIRE(code_table.size() == 1);
 }
 
-TEST_CASE("Generates valid code lengths when input has multiple symbols",
-          "[prefix_code_encoder]") {
+TEST_CASE("Generates valid code lengths when input has multiple symbols", "[prefix_code_encoder]") {
   // clang-format off
   auto [frequencies, max_code_length] = GENERATE(
     std::make_tuple(frequency_table{{'a', 1}, {'b', 1}, {'c', 3}, {'d', 5}, {'e', 6}, {'f', 11}, {'g', 13}}, 3U),

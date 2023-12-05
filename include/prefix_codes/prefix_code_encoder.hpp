@@ -27,8 +27,7 @@ class prefix_code_encoder {
   using code_table = std::unordered_map<unsigned int, unsigned int>;
   using code_length_table = std::map<unsigned int, unsigned int>;
 
-  static const unsigned int MAX_CODE_LENGTH_VALUE {
-    std::numeric_limits<unsigned int>::digits};
+  static const unsigned int MAX_CODE_LENGTH_VALUE {std::numeric_limits<unsigned int>::digits};
 
   const unsigned int max_code_length_;
   code_length_table code_length_table_;
@@ -47,8 +46,7 @@ class prefix_code_encoder {
 
   void expand_package(package_node_ptr package);
   static package_list package(const package_list& list);
-  static package_list merge(const package_list& list1,
-                            const package_list& list2);
+  static package_list merge(const package_list& list1, const package_list& list2);
 };
 
 }  // namespace prefix_codes

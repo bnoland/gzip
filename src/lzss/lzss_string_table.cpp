@@ -8,8 +8,7 @@
 
 namespace lzss {
 
-lzss_string_table::lzss_string_table(unsigned int max_chain_length)
-    : max_chain_length_ {max_chain_length} {}
+lzss_string_table::lzss_string_table(unsigned int max_chain_length) : max_chain_length_ {max_chain_length} {}
 
 void lzss_string_table::insert(std::string_view string, unsigned int position) {
   auto index {get_chain_index(string)};
@@ -20,8 +19,7 @@ void lzss_string_table::insert(std::string_view string, unsigned int position) {
   }
 }
 
-std::optional<back_reference> lzss_string_table::get_back_reference(
-    std::string_view string) const {
+std::optional<back_reference> lzss_string_table::get_back_reference(std::string_view string) const {
   auto index {get_chain_index(string)};
 
   for (const auto& [search, position] : chains_[index]) {
