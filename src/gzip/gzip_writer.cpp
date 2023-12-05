@@ -188,25 +188,30 @@ void gzip_writer::write_block_type_2(std::string_view input_buffer, bool is_last
   std::vector<unsigned int> ll_distance_code_length_buffer {};
 
   const unsigned int MAX_LENGTH_LITERAL_CODE {285};
+  unsigned int num_ll_codes {0};
+
   for (unsigned int code {0}; code <= MAX_LENGTH_LITERAL_CODE; code++) {
     if (ll_code_lengths.contains(code)) {
       ll_distance_code_length_buffer.push_back(ll_code_lengths.at(code));
+      num_ll_codes = code + 1;
     } else {
       ll_distance_code_length_buffer.push_back(0);
     }
   }
 
   const unsigned int MAX_DISTANCE_CODE {29};
+  unsigned int num_distance_codes {0};
+
   for (unsigned int code {0}; code <= MAX_DISTANCE_CODE; code++) {
     if (distance_code_lengths.contains(code)) {
       ll_distance_code_length_buffer.push_back(distance_code_lengths.at(code));
+      num_distance_codes = code + 1;
     } else {
       ll_distance_code_length_buffer.push_back(0);
     }
   }
 
-  // XXX: Compute HLIT + HDIST.
-  // XXX: Run specialized RLE on values in `code_length_buffer`.
+  // XXX: Run specialized RLE on values in `ll_distance_code_length_buffer`.
 
   // Compute the frequency of each code length that occurs in the length/literal and distance code length buffer.
 
@@ -230,33 +235,41 @@ void gzip_writer::write_block_type_2(std::string_view input_buffer, bool is_last
   auto cl_code_lengths {cl_encoder.get_code_length_table()};
 
   std::vector<unsigned int> cl_code_length_buffer {};
+  unsigned int num_cl_codes {0};
 
-  for (auto code : CL_CODE_LENGTH_ORDER) {
+  for (unsigned int i {0}; i < std::size(CL_CODE_LENGTH_ORDER); i++) {
+    unsigned int code {CL_CODE_LENGTH_ORDER[i]};
+
     if (cl_code_lengths.contains(code)) {
       cl_code_length_buffer.push_back(cl_code_lengths.at(code));
+      num_cl_codes = i + 1;
     } else {
       cl_code_length_buffer.push_back(0);
     }
   }
 
-  // XXX: Compute HCLEN.
+  bit_writer_.put_bits(num_ll_codes - 257, 5);
+  bit_writer_.put_bits(num_distance_codes - 1, 5);
+  bit_writer_.put_bits(num_cl_codes - 4, 4);
 
-  // XXX: HLIT, HDIST, and HCLEN will be computed dynamically in the future.
-  bit_writer_.put_bits(286 - 257, 5);
-  bit_writer_.put_bits(30 - 1, 5);
-  bit_writer_.put_bits(19 - 4, 4);
+  // Write the CL code length table.
 
-  // Write out the CL code length buffer.
-
-  for (auto length : cl_code_length_buffer) {
+  for (unsigned int i {0}; i < num_cl_codes; i++) {
+    auto length {cl_code_length_buffer[i]};
     bit_writer_.put_bits(length, 3);
   }
 
-  // Write out the length/literal and distance code length buffer.
+  // Write the length/literal and distance code length tables.
 
   auto cl_codes {cl_encoder.get_code_table()};
 
-  for (auto length : ll_distance_code_length_buffer) {
+  for (unsigned int i {0}; i < num_ll_codes; i++) {
+    auto length {ll_distance_code_length_buffer[i]};
+    bit_writer_.put_bits(cl_codes.at(length), cl_code_lengths.at(length), false);
+  }
+
+  for (unsigned int i {0}; i < num_distance_codes; i++) {
+    auto length {ll_distance_code_length_buffer[i + MAX_LENGTH_LITERAL_CODE + 1]};
     bit_writer_.put_bits(cl_codes.at(length), cl_code_lengths.at(length), false);
   }
 
