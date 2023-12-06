@@ -177,6 +177,7 @@ void gzip_writer::write_block_type_2(std::string_view input_buffer, bool is_last
   const unsigned int MAX_LL_DISTANCE_CODE_LENGTH {15};
   prefix_codes::prefix_code_encoder ll_encoder {MAX_LL_DISTANCE_CODE_LENGTH};
   ll_encoder.encode(input_ll_freqs);
+  // XXX: Handle case when no distance symbols present.
   prefix_codes::prefix_code_encoder distance_encoder {MAX_LL_DISTANCE_CODE_LENGTH};
   distance_encoder.encode(input_distance_freqs);
 
@@ -187,13 +188,19 @@ void gzip_writer::write_block_type_2(std::string_view input_buffer, bool is_last
 
   std::vector<unsigned int> ll_distance_code_length_buffer {};
 
-  const unsigned int MAX_LENGTH_LITERAL_CODE {285};
+  const unsigned int MAX_LL_CODE {285};
   unsigned int num_ll_codes {0};
 
-  for (unsigned int code {0}; code <= MAX_LENGTH_LITERAL_CODE; code++) {
+  for (int code {MAX_LL_CODE}; code >= 0; code--) {
+    if (ll_code_lengths.contains(code)) {
+      num_ll_codes = code + 1;
+      break;
+    }
+  }
+
+  for (unsigned int code {0}; code < num_ll_codes; code++) {
     if (ll_code_lengths.contains(code)) {
       ll_distance_code_length_buffer.push_back(ll_code_lengths.at(code));
-      num_ll_codes = code + 1;
     } else {
       ll_distance_code_length_buffer.push_back(0);
     }
@@ -202,25 +209,100 @@ void gzip_writer::write_block_type_2(std::string_view input_buffer, bool is_last
   const unsigned int MAX_DISTANCE_CODE {29};
   unsigned int num_distance_codes {0};
 
-  for (unsigned int code {0}; code <= MAX_DISTANCE_CODE; code++) {
+  for (int code {MAX_DISTANCE_CODE}; code >= 0; code--) {
+    if (distance_code_lengths.contains(code)) {
+      num_distance_codes = code + 1;
+      break;
+    }
+  }
+
+  for (unsigned int code {0}; code < num_distance_codes; code++) {
     if (distance_code_lengths.contains(code)) {
       ll_distance_code_length_buffer.push_back(distance_code_lengths.at(code));
-      num_distance_codes = code + 1;
     } else {
       ll_distance_code_length_buffer.push_back(0);
     }
   }
 
-  // XXX: Run specialized RLE on values in `ll_distance_code_length_buffer`.
+  // Run-length encode the length/literal and distance length buffer.
+
+  struct cl_symbol {
+    unsigned int code;
+    unsigned int repeat_count {0};
+  };
+
+  std::vector<cl_symbol> rle_output {};
+
+  unsigned int repeat_count {0};
+  unsigned int i;
+
+  for (i = 0; i < ll_distance_code_length_buffer.size(); i++) {
+    if (i == 0) {
+      rle_output.push_back({ll_distance_code_length_buffer[i]});
+      continue;
+    }
+
+    if (ll_distance_code_length_buffer[i - 1] == ll_distance_code_length_buffer[i]) {
+      repeat_count++;
+      if (ll_distance_code_length_buffer[i] == 0) {
+        if (repeat_count == 138) {
+          rle_output.push_back({18, repeat_count});
+          repeat_count = 0;
+        }
+      } else {
+        if (repeat_count == 6) {
+          rle_output.push_back({16, repeat_count});
+          repeat_count = 0;
+        }
+      }
+      continue;
+    }
+
+    if (repeat_count >= 3) {
+      if (ll_distance_code_length_buffer[i - 1] == 0) {
+        if (repeat_count <= 10) {
+          rle_output.push_back({17, repeat_count});
+        } else {
+          rle_output.push_back({18, repeat_count});
+        }
+      } else {
+        rle_output.push_back({16, repeat_count});
+      }
+    } else if (repeat_count > 0) {
+      for (unsigned int j {0}; j < repeat_count; j++) {
+        rle_output.push_back({ll_distance_code_length_buffer[i - 1]});
+      }
+    }
+
+    rle_output.push_back({ll_distance_code_length_buffer[i]});
+    repeat_count = 0;
+  }
+
+  // XXX: Can we avoid this repetition?
+  if (repeat_count >= 3) {
+    if (ll_distance_code_length_buffer[i - 1] == 0) {
+      if (repeat_count <= 10) {
+        rle_output.push_back({17, repeat_count});
+      } else {
+        rle_output.push_back({18, repeat_count});
+      }
+    } else {
+      rle_output.push_back({16, repeat_count});
+    }
+  } else if (repeat_count > 0) {
+    for (unsigned int j {0}; j < repeat_count; j++) {
+      rle_output.push_back({ll_distance_code_length_buffer[i - 1]});
+    }
+  }
 
   // Compute the frequency of each code length that occurs in the length/literal and distance code length buffer.
 
   std::unordered_map<unsigned int, unsigned int> ll_distance_code_length_freqs {};
-  for (auto code : ll_distance_code_length_buffer) {
-    if (!ll_distance_code_length_freqs.contains(code)) {
-      ll_distance_code_length_freqs.insert({code, 0});
+  for (const auto& symbol : rle_output) {
+    if (!ll_distance_code_length_freqs.contains(symbol.code)) {
+      ll_distance_code_length_freqs.insert({symbol.code, 0});
     }
-    ll_distance_code_length_freqs.at(code)++;
+    ll_distance_code_length_freqs.at(symbol.code)++;
   }
 
   // Compute the CL codes.
@@ -248,6 +330,8 @@ void gzip_writer::write_block_type_2(std::string_view input_buffer, bool is_last
     }
   }
 
+  // Write the number of codes of each type.
+
   bit_writer_.put_bits(num_ll_codes - 257, 5);
   bit_writer_.put_bits(num_distance_codes - 1, 5);
   bit_writer_.put_bits(num_cl_codes - 4, 4);
@@ -263,14 +347,18 @@ void gzip_writer::write_block_type_2(std::string_view input_buffer, bool is_last
 
   auto cl_codes {cl_encoder.get_code_table()};
 
-  for (unsigned int i {0}; i < num_ll_codes; i++) {
-    auto length {ll_distance_code_length_buffer[i]};
-    bit_writer_.put_bits(cl_codes.at(length), cl_code_lengths.at(length), false);
-  }
+  for (const auto& symbol : rle_output) {
+    auto code {cl_codes.at(symbol.code)};
+    auto length {cl_code_lengths.at(symbol.code)};
+    bit_writer_.put_bits(code, length, false);
 
-  for (unsigned int i {0}; i < num_distance_codes; i++) {
-    auto length {ll_distance_code_length_buffer[i + MAX_LENGTH_LITERAL_CODE + 1]};
-    bit_writer_.put_bits(cl_codes.at(length), cl_code_lengths.at(length), false);
+    if (symbol.code == 16) {
+      bit_writer_.put_bits(symbol.repeat_count - 3, 2);
+    } else if (symbol.code == 17) {
+      bit_writer_.put_bits(symbol.repeat_count - 3, 3);
+    } else if (symbol.code == 18) {
+      bit_writer_.put_bits(symbol.repeat_count - 11, 7);
+    }
   }
 
   // Write the compressed data.
