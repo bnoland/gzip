@@ -20,6 +20,12 @@ void prefix_code_encoder::encode(const frequency_table& frequencies) {
 }
 
 void prefix_code_encoder::compute_code_length_table(const frequency_table& frequencies) {
+  if (frequencies.size() == 0) {
+    // Block type 2 seems to insist on having at least 1 distance code, so we put a dummy code here.
+    code_length_table_ = {{0, 0}};
+    return;
+  }
+
   if (frequencies.size() == 1) {
     code_length_table_ = {{frequencies.begin()->first, 1}};
     return;
