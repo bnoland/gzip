@@ -3,6 +3,10 @@ project('gzip', 'cpp',
   default_options : ['warning_level=3',
                      'cpp_std=c++20'])
 
+if get_option('buildtype') == 'debug'
+  add_project_arguments('-fno-inline', language : 'cpp')
+endif
+
 include_dir = include_directories('include')
 
 catch2_dep = dependency('catch2-with-main')
