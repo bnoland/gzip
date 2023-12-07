@@ -13,8 +13,7 @@ void lzss_encoder::encode(std::string_view input_buffer) {
   unsigned int input_pos {0};
 
   while (input_pos < input_buffer.length()) {
-    std::string string {
-      input_buffer.substr(input_pos, constants::MAX_BACKREF_LENGTH)};
+    std::string string {input_buffer.substr(input_pos, constants::MAX_BACKREF_LENGTH)};
     auto back_ref {string_table_.get_back_reference(string)};
 
     string_table_.insert(string, current_position_);
@@ -39,8 +38,7 @@ void lzss_encoder::encode(std::string_view input_buffer) {
   }
 }
 
-void lzss_encoder::output_back_reference(unsigned int length,
-                                         unsigned int distance) {
+void lzss_encoder::output_back_reference(unsigned int length, unsigned int distance) {
   symbol_list_.add({lzss_symbol_type::LENGTH, length});
   symbol_list_.add({lzss_symbol_type::DISTANCE, distance});
   current_position_ += length;
@@ -48,8 +46,7 @@ void lzss_encoder::output_back_reference(unsigned int length,
 
 void lzss_encoder::output_literal(unsigned int value) {
   // XXX: Nasty static cast...
-  symbol_list_.add(
-      {lzss_symbol_type::LITERAL, static_cast<unsigned char>(value)});
+  symbol_list_.add({lzss_symbol_type::LITERAL, static_cast<unsigned char>(value)});
   current_position_++;
 }
 

@@ -9,18 +9,14 @@ namespace lzss {
 
 const lzss_symbol END_OF_BLOCK_MARKER {lzss_symbol_type::LITERAL, 256};
 
-lzss_symbol::lzss_symbol(lzss_symbol_type type, unsigned int value)
-    : type_ {type}, value_ {value} {
-  assert(!(type == lzss_symbol_type::LITERAL && value > 256) &&
-         "trying to create invalid literal");
+lzss_symbol::lzss_symbol(lzss_symbol_type type, unsigned int value) : type_ {type}, value_ {value} {
+  assert(!(type == lzss_symbol_type::LITERAL && value > 256) && "trying to create invalid literal");
 
   assert(!(type == lzss_symbol_type::LENGTH &&
-           (value < constants::MIN_BACKREF_LENGTH ||
-            value > constants::MAX_BACKREF_LENGTH)) &&
+           (value < constants::MIN_BACKREF_LENGTH || value > constants::MAX_BACKREF_LENGTH)) &&
          "trying to create invalid length");
 
-  assert(!(type == lzss_symbol_type::DISTANCE &&
-           value > constants::MAX_BACKREF_DISTANCE) &&
+  assert(!(type == lzss_symbol_type::DISTANCE && value > constants::MAX_BACKREF_DISTANCE) &&
          "trying to create invalid distance");
 
   lookup_code_table_data();

@@ -5,8 +5,7 @@
 #include <string>
 
 TEST_CASE("Correctly encodes input symbols", "[encoder]") {
-  auto [input_buffer,
-        expected_output] = GENERATE(table<std::string, std::string>({
+  auto [input_buffer, expected_output] = GENERATE(table<std::string, std::string>({
     {"", ""},
     {"abcdef", "abcdef"},
     {"banana", "ban<3:2>"},

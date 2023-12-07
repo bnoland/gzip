@@ -3,6 +3,10 @@ project('gzip', 'cpp',
   default_options : ['warning_level=3',
                      'cpp_std=c++20'])
 
+if get_option('buildtype') == 'debug'
+  add_project_arguments('-fno-inline', language : 'cpp')
+endif
+
 include_dir = include_directories('include')
 
 catch2_dep = dependency('catch2-with-main')
@@ -61,6 +65,20 @@ lzss_encoder_test = executable(
 
 test('lzss_encoder_test', lzss_encoder_test)
 
+# --- Prefix Encoder / Decoder Tests ---
+
+prefix_code_encoder_test = executable(
+  'prefix_code_encoder_test',
+  sources : [
+    'test/prefix_codes/prefix_code_encoder_test.cpp',
+    'src/prefix_codes/prefix_code_encoder.cpp'
+  ],
+  include_directories : include_dir,
+  dependencies : catch2_dep
+)
+
+test('prefix_code_encoder_test', prefix_code_encoder_test)
+
 # --- Command-Line Tools ---
 
 executable(
@@ -69,6 +87,7 @@ executable(
     'src/cli/gzip.cpp',
     'src/bit_io/bit_writer.cpp',
     'src/prefix_codes/fixed_code_table.cpp',
+    'src/prefix_codes/prefix_code_encoder.cpp',
     'src/lzss/lzss_encoder.cpp',
     'src/lzss/lzss_string_table.cpp',
     'src/lzss/lzss_symbol.cpp',

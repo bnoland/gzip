@@ -485,6 +485,8 @@ def decode_dynamic(stream,output_buffer):
                 codes_read += 1
             last_symbol = 0
 
+    # print(ll_code_lengths)
+
     ll_codes = code_lengths_to_code_table(ll_code_lengths)
     decode_print("LL codes:")
     for i in range(len(ll_codes)):
@@ -492,6 +494,8 @@ def decode_dynamic(stream,output_buffer):
         if length == 0:
             continue
         decode_print("    %d: %s"%(i, binary_string_big_endian(encoded_bits, length)))
+
+    # print(dist_code_lengths)
 
     dist_codes = code_lengths_to_code_table(dist_code_lengths)
     decode_print("dist codes:")

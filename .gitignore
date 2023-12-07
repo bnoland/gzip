@@ -1,5 +1,6 @@
 examples/
 build/
 subprojects/
+prototyping/
 .cache/
 .vscode/

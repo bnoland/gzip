@@ -22,7 +22,7 @@ class gzip_writer {
   void write_deflate_bit_stream();
   void write_footer();
 
-  // XXX: Put this stuff in a separate Deflate::Writer class?
+  // XXX: Put this stuff in a separate deflate writer class?
   static const unsigned int INPUT_CHUNK_SIZE {65535};
   std::string read_input_chunk();
   void write_block_type_0(std::string_view input_buffer, bool is_last_block);
