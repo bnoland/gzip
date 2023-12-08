@@ -11,9 +11,9 @@
 
 namespace gzip {
 
-class gzip_writer {
+class GzipWriter {
  public:
-  gzip_writer(std::istream& input, std::ostream& output);
+  GzipWriter(std::istream& input, std::ostream& output);
 
   void write();
 
@@ -32,10 +32,10 @@ class gzip_writer {
   unsigned int input_size_ {0};
   std::istream& input_;
   std::ostream& output_;
-  bit_io::bit_writer bit_writer_;
+  bit_io::BitWriter bit_writer_;
 
-  prefix_codes::fixed_code_table fixed_code_table_ {};
-  lzss::lzss_encoder lzss_encoder_ {};
+  prefix_codes::FixedCodeTable fixed_code_table_ {};
+  lzss::LzssEncoder lzss_encoder_ {};
 };
 
 }  // namespace gzip

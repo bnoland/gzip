@@ -3,5 +3,5 @@
 #include <iostream>
 
 int main() {
-  gzip::gzip_writer {std::cin, std::cout}.write();
+  gzip::GzipWriter {std::cin, std::cout}.write();
 }

@@ -5,11 +5,11 @@
 namespace prefix_codes {
 
 // XXX: Does this even need to be a class?
-class fixed_code_table {
+class FixedCodeTable {
  public:
-  fixed_code_table();
+  FixedCodeTable();
 
-  struct entry {
+  struct Entry {
     unsigned int prefix_code;
     unsigned int num_bits;
   };
@@ -30,8 +30,8 @@ class fixed_code_table {
   static const unsigned int NUM_LENGTH_LITERAL_CODES {288};
   static const unsigned int NUM_DISTANCE_CODES {32};
 
-  entry length_literal_code_table_[NUM_LENGTH_LITERAL_CODES];
-  entry distance_code_table_[NUM_DISTANCE_CODES];
+  Entry length_literal_code_table_[NUM_LENGTH_LITERAL_CODES];
+  Entry distance_code_table_[NUM_DISTANCE_CODES];
 };
 
 }  // namespace prefix_codes

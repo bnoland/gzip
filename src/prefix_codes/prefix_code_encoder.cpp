@@ -10,16 +10,16 @@
 
 namespace prefix_codes {
 
-prefix_code_encoder::prefix_code_encoder(unsigned int max_code_length) : max_code_length_ {max_code_length} {
+PrefixCodeEncoder::PrefixCodeEncoder(unsigned int max_code_length) : max_code_length_ {max_code_length} {
   assert(max_code_length <= MAX_CODE_LENGTH_VALUE && "max code length is too large");
 }
 
-void prefix_code_encoder::encode(const frequency_table& frequencies) {
+void PrefixCodeEncoder::encode(const FrequencyTable& frequencies) {
   compute_code_length_table(frequencies);
   compute_code_table();
 }
 
-void prefix_code_encoder::compute_code_length_table(const frequency_table& frequencies) {
+void PrefixCodeEncoder::compute_code_length_table(const FrequencyTable& frequencies) {
   if (frequencies.size() == 0) {
     // Block type 2 seems to insist on having at least 1 distance code, so we put a dummy code here.
     code_length_table_ = {{0, 0}};
@@ -33,16 +33,16 @@ void prefix_code_encoder::compute_code_length_table(const frequency_table& frequ
 
   assert(max_code_length_ >= std::ceil(std::log2(frequencies.size())) && "max code length is too small");
 
-  package_list singletons {};
+  PackageList singletons {};
   for (auto [symbol, freq] : frequencies) {
-    singletons.push_back(std::make_shared<package_node>(symbol, freq));
+    singletons.push_back(std::make_shared<PackageNode>(symbol, freq));
   }
 
   auto compare = [](const auto& lhs, const auto& rhs) { return lhs->weight < rhs->weight; };
 
   std::sort(singletons.begin(), singletons.end(), compare);
 
-  package_list packages {singletons};
+  PackageList packages {singletons};
   for (unsigned int i {0}; i < max_code_length_ - 1; i++) {
     packages = merge(package(packages), singletons);
   }
@@ -52,7 +52,7 @@ void prefix_code_encoder::compute_code_length_table(const frequency_table& frequ
   }
 }
 
-void prefix_code_encoder::compute_code_table() {
+void PrefixCodeEncoder::compute_code_table() {
   // XXX: Magic numbers...
 
   unsigned int length_counts[15 + 1] {0};
@@ -74,7 +74,7 @@ void prefix_code_encoder::compute_code_table() {
   }
 }
 
-void prefix_code_encoder::expand_package(package_node_ptr package) {
+void PrefixCodeEncoder::expand_package(PackageNodePtr package) {
   if (package->left == nullptr && package->right == nullptr) {
     assert(package->symbol.has_value() && "package has leaf node with no symbol");
 
@@ -95,20 +95,20 @@ void prefix_code_encoder::expand_package(package_node_ptr package) {
   }
 }
 
-prefix_code_encoder::package_list prefix_code_encoder::package(const package_list& list) {
-  package_list result {};
+PrefixCodeEncoder::PackageList PrefixCodeEncoder::package(const PackageList& list) {
+  PackageList result {};
 
   for (unsigned int i {0}; i < list.size() / 2; i++) {
     auto left {list[2 * i]};
     auto right {list[2 * i + 1]};
-    result.push_back(std::make_shared<package_node>(std::nullopt, left->weight + right->weight, left, right));
+    result.push_back(std::make_shared<PackageNode>(std::nullopt, left->weight + right->weight, left, right));
   }
 
   return result;
 }
 
-prefix_code_encoder::package_list prefix_code_encoder::merge(const package_list& list1, const package_list& list2) {
-  package_list result {};
+PrefixCodeEncoder::PackageList PrefixCodeEncoder::merge(const PackageList& list1, const PackageList& list2) {
+  PackageList result {};
   unsigned int i {0}, j {0};
 
   while (i < list1.size() && j < list2.size()) {

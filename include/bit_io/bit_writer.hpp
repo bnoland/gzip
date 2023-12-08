@@ -5,9 +5,9 @@
 
 namespace bit_io {
 
-class bit_writer {
+class BitWriter {
  public:
-  bit_writer(std::ostream& output);
+  BitWriter(std::ostream& output);
 
   void put_single_bit(bool value);
   void put_bits(uint64_t value, int num_bits, bool low_bit_first = true);

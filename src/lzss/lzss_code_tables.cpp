@@ -6,7 +6,7 @@ namespace lzss::code_tables {
 
 namespace {
 
-const entry LENGTH_CODE_TABLE[] {
+const Entry LENGTH_CODE_TABLE[] {
   {257, 0, 3, 3},     {258, 0, 4, 4},     {259, 0, 5, 5},     {260, 0, 6, 6},     {261, 0, 7, 7},
   {262, 0, 8, 8},     {263, 0, 9, 9},     {264, 0, 10, 10},   {265, 1, 11, 12},   {266, 1, 13, 14},
   {267, 1, 15, 16},   {268, 1, 17, 18},   {269, 2, 19, 22},   {270, 2, 23, 26},   {271, 2, 27, 30},
@@ -15,7 +15,7 @@ const entry LENGTH_CODE_TABLE[] {
   {282, 5, 163, 194}, {283, 5, 195, 226}, {284, 5, 227, 257}, {285, 0, 258, 258},
 };
 
-const entry DISTANCE_CODE_TABLE[] {
+const Entry DISTANCE_CODE_TABLE[] {
   {0, 0, 1, 1},         {1, 0, 2, 2},          {2, 0, 3, 3},           {3, 0, 4, 4},           {4, 1, 5, 6},
   {5, 1, 7, 8},         {6, 2, 9, 12},         {7, 2, 13, 16},         {8, 3, 17, 24},         {9, 3, 25, 32},
   {10, 4, 33, 48},      {11, 4, 49, 64},       {12, 5, 65, 96},        {13, 5, 97, 128},       {14, 6, 129, 192},
@@ -26,7 +26,7 @@ const entry DISTANCE_CODE_TABLE[] {
 
 }  // namespace
 
-const entry& get_length_entry(unsigned int length) {
+const Entry& get_length_entry(unsigned int length) {
   for (const auto& entry : LENGTH_CODE_TABLE) {
     if (length >= entry.lower_bound && length <= entry.upper_bound) {
       return entry;
@@ -36,7 +36,7 @@ const entry& get_length_entry(unsigned int length) {
   assert(false && "searching for invalid length in code table");
 }
 
-const entry& get_distance_entry(unsigned int distance) {
+const Entry& get_distance_entry(unsigned int distance) {
   for (const auto& entry : DISTANCE_CODE_TABLE) {
     if (distance >= entry.lower_bound && distance <= entry.upper_bound) {
       return entry;

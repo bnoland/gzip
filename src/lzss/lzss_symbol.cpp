@@ -7,24 +7,24 @@
 
 namespace lzss {
 
-const lzss_symbol END_OF_BLOCK_MARKER {lzss_symbol_type::LITERAL, 256};
+const LzssSymbol END_OF_BLOCK_MARKER {LzssSymbolType::LITERAL, 256};
 
-lzss_symbol::lzss_symbol(lzss_symbol_type type, unsigned int value) : type_ {type}, value_ {value} {
-  assert(!(type == lzss_symbol_type::LITERAL && value > 256) && "trying to create invalid literal");
+LzssSymbol::LzssSymbol(LzssSymbolType type, unsigned int value) : type_ {type}, value_ {value} {
+  assert(!(type == LzssSymbolType::LITERAL && value > 256) && "trying to create invalid literal");
 
-  assert(!(type == lzss_symbol_type::LENGTH &&
+  assert(!(type == LzssSymbolType::LENGTH &&
            (value < constants::MIN_BACKREF_LENGTH || value > constants::MAX_BACKREF_LENGTH)) &&
          "trying to create invalid length");
 
-  assert(!(type == lzss_symbol_type::DISTANCE && value > constants::MAX_BACKREF_DISTANCE) &&
+  assert(!(type == LzssSymbolType::DISTANCE && value > constants::MAX_BACKREF_DISTANCE) &&
          "trying to create invalid distance");
 
   lookup_code_table_data();
 }
 
-void lzss_symbol::lookup_code_table_data() {
+void LzssSymbol::lookup_code_table_data() {
   switch (type_) {
-    using enum lzss_symbol_type;
+    using enum LzssSymbolType;
 
     case LITERAL:
       code_ = value_;
@@ -46,20 +46,20 @@ void lzss_symbol::lookup_code_table_data() {
   }
 }
 
-void lzss_symbol_list::add(const lzss_symbol& symbol) {
+void LzssSymbolList::add(const LzssSymbol& symbol) {
   list_.push_back(symbol);
 }
 
-void lzss_symbol_list::clear() {
+void LzssSymbolList::clear() {
   list_.clear();
 }
 
-std::string lzss_symbol_list::to_string() const {
+std::string LzssSymbolList::to_string() const {
   std::string result {};
 
   for (const auto& symbol : list_) {
     switch (symbol.get_type()) {
-      using enum lzss_symbol_type;
+      using enum LzssSymbolType;
 
       case LITERAL:
         result += symbol.get_value();

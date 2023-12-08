@@ -7,7 +7,7 @@
 
 namespace lzss {
 
-class lzss_encoder {
+class LzssEncoder {
  public:
   void encode(std::string_view input_buffer);
 
@@ -19,8 +19,8 @@ class lzss_encoder {
   void output_literal(unsigned int value);
 
   unsigned int current_position_ {0};
-  lzss_string_table string_table_ {};
-  lzss_symbol_list symbol_list_ {};
+  LzssStringTable string_table_ {};
+  LzssSymbolList symbol_list_ {};
 };
 
 }  // namespace lzss

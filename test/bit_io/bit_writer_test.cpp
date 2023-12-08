@@ -15,7 +15,7 @@ bool stream_bytes_equal(std::ostringstream& oss, std::initializer_list<uint8_t> 
 
 TEST_CASE("put_single_bit()", "[bit_writer][put_single_bit]") {
   std::ostringstream oss {};
-  bit_io::bit_writer bit_writer {oss};
+  bit_io::BitWriter bit_writer {oss};
 
   SECTION("Short bit strings are padded with zeros") {
     bit_writer.put_single_bit(true);
@@ -40,7 +40,7 @@ TEST_CASE("put_single_bit()", "[bit_writer][put_single_bit]") {
 
 TEST_CASE("put_bits()", "[bit_writer][put_bits]") {
   std::ostringstream oss {};
-  bit_io::bit_writer bit_writer {oss};
+  bit_io::BitWriter bit_writer {oss};
 
   SECTION("Write low bit first") {
     SECTION("Bits written in correct order") {

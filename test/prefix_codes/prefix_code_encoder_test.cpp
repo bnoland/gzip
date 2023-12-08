@@ -7,19 +7,19 @@
 // XXX: Check that assertions are thrown when preconditions are invalid.
 // I don't think Catch2 supports this. Might want to try out GoogleTest instead.
 
-using frequency_table = prefix_codes::prefix_code_encoder::frequency_table;
+using FrequencyTable = prefix_codes::PrefixCodeEncoder::FrequencyTable;
 
 TEST_CASE("Generates single code of length 1 when input has single symbol", "[prefix_code_encoder]") {
   // clang-format off
   auto [frequencies, max_code_length] = GENERATE(
-    std::make_tuple(frequency_table{{'a', 1}}, 1U),
-    std::make_tuple(frequency_table{{'a', 5}}, 1U)
+    std::make_tuple(FrequencyTable{{'a', 1}}, 1U),
+    std::make_tuple(FrequencyTable{{'a', 5}}, 1U)
   );
   // clang-format on
 
   CAPTURE(frequencies, max_code_length);
 
-  prefix_codes::prefix_code_encoder encoder {max_code_length};
+  prefix_codes::PrefixCodeEncoder encoder {max_code_length};
 
   encoder.encode(frequencies);
 
@@ -34,17 +34,17 @@ TEST_CASE("Generates single code of length 1 when input has single symbol", "[pr
 TEST_CASE("Generates valid code lengths when input has multiple symbols", "[prefix_code_encoder]") {
   // clang-format off
   auto [frequencies, max_code_length] = GENERATE(
-    std::make_tuple(frequency_table{{'a', 1}, {'b', 1}, {'c', 3}, {'d', 5}, {'e', 6}, {'f', 11}, {'g', 13}}, 3U),
-    std::make_tuple(frequency_table{{'a', 1}, {'b', 1}, {'c', 3}, {'d', 5}, {'e', 6}, {'f', 11}, {'g', 13}}, 4U),
-    std::make_tuple(frequency_table{{'a', 1}, {'b', 1}, {'c', 3}, {'d', 5}, {'e', 6}, {'f', 11}, {'g', 13}}, 5U),
-    std::make_tuple(frequency_table{{'a', 1}, {'b', 1}, {'c', 3}, {'d', 5}, {'e', 6}, {'f', 11}, {'g', 13}}, 15U),
-    std::make_tuple(frequency_table{{'a', 1}, {'b', 1}}, 1U)
+    std::make_tuple(FrequencyTable{{'a', 1}, {'b', 1}, {'c', 3}, {'d', 5}, {'e', 6}, {'f', 11}, {'g', 13}}, 3U),
+    std::make_tuple(FrequencyTable{{'a', 1}, {'b', 1}, {'c', 3}, {'d', 5}, {'e', 6}, {'f', 11}, {'g', 13}}, 4U),
+    std::make_tuple(FrequencyTable{{'a', 1}, {'b', 1}, {'c', 3}, {'d', 5}, {'e', 6}, {'f', 11}, {'g', 13}}, 5U),
+    std::make_tuple(FrequencyTable{{'a', 1}, {'b', 1}, {'c', 3}, {'d', 5}, {'e', 6}, {'f', 11}, {'g', 13}}, 15U),
+    std::make_tuple(FrequencyTable{{'a', 1}, {'b', 1}}, 1U)
   );
   // clang-format on
 
   CAPTURE(frequencies, max_code_length);
 
-  prefix_codes::prefix_code_encoder encoder {max_code_length};
+  prefix_codes::PrefixCodeEncoder encoder {max_code_length};
 
   encoder.encode(frequencies);
   auto code_length_table {encoder.get_code_length_table()};

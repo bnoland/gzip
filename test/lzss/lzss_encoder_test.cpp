@@ -16,7 +16,7 @@ TEST_CASE("Correctly encodes input symbols", "[encoder]") {
 
   CAPTURE(input_buffer);
 
-  lzss::lzss_encoder encoder {};
+  lzss::LzssEncoder encoder {};
   encoder.encode(input_buffer);
 
   auto symbol_list {encoder.get_symbol_list()};

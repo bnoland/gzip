@@ -7,7 +7,7 @@
 
 namespace lzss {
 
-void lzss_encoder::encode(std::string_view input_buffer) {
+void LzssEncoder::encode(std::string_view input_buffer) {
   symbol_list_.clear();
 
   unsigned int input_pos {0};
@@ -38,15 +38,15 @@ void lzss_encoder::encode(std::string_view input_buffer) {
   }
 }
 
-void lzss_encoder::output_back_reference(unsigned int length, unsigned int distance) {
-  symbol_list_.add({lzss_symbol_type::LENGTH, length});
-  symbol_list_.add({lzss_symbol_type::DISTANCE, distance});
+void LzssEncoder::output_back_reference(unsigned int length, unsigned int distance) {
+  symbol_list_.add({LzssSymbolType::LENGTH, length});
+  symbol_list_.add({LzssSymbolType::DISTANCE, distance});
   current_position_ += length;
 }
 
-void lzss_encoder::output_literal(unsigned int value) {
+void LzssEncoder::output_literal(unsigned int value) {
   // XXX: Nasty static cast...
-  symbol_list_.add({lzss_symbol_type::LITERAL, static_cast<unsigned char>(value)});
+  symbol_list_.add({LzssSymbolType::LITERAL, static_cast<unsigned char>(value)});
   current_position_++;
 }
 

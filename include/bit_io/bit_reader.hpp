@@ -5,9 +5,9 @@
 
 namespace bit_io {
 
-class bit_reader {
+class BitReader {
  public:
-  bit_reader(std::istream& input);
+  BitReader(std::istream& input);
 
   bool get_single_bit();
   uint64_t get_bits(int num_bits, bool low_bit_first = true);

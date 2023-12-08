@@ -7,10 +7,10 @@
 
 TEST_CASE("Can read back written bits", "[bit_writer][bit_reader]") {
   std::ostringstream oss {};
-  bit_io::bit_writer bit_writer {oss};
+  bit_io::BitWriter bit_writer {oss};
 
   std::istringstream iss {};
-  bit_io::bit_reader bit_reader {iss};
+  bit_io::BitReader bit_reader {iss};
 
   // XXX: Can we improve how this lambda function is written?
   auto recover_bits = [&](uint64_t value, int num_bits, bool low_bit_first = true) {

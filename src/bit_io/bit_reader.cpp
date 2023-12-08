@@ -6,9 +6,9 @@
 
 namespace bit_io {
 
-bit_reader::bit_reader(std::istream& input) : input_ {input} {}
+BitReader::BitReader(std::istream& input) : input_ {input} {}
 
-bool bit_reader::get_single_bit() {
+bool BitReader::get_single_bit() {
   if (current_bit_ == 0) {
     current_byte_ = input_.get();
   }
@@ -23,7 +23,7 @@ bool bit_reader::get_single_bit() {
   return value;
 }
 
-uint64_t bit_reader::get_bits(int num_bits, bool low_bit_first) {
+uint64_t BitReader::get_bits(int num_bits, bool low_bit_first) {
   assert(num_bits > 0 && num_bits <= 64);
 
   uint64_t value = 0;
@@ -41,7 +41,7 @@ uint64_t bit_reader::get_bits(int num_bits, bool low_bit_first) {
   return value;
 }
 
-bool bit_reader::eof() const {
+bool BitReader::eof() const {
   return input_.eof();
 }
 

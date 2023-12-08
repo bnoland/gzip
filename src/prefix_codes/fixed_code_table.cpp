@@ -2,12 +2,12 @@
 
 namespace prefix_codes {
 
-fixed_code_table::fixed_code_table() {
+FixedCodeTable::FixedCodeTable() {
   init_length_literal_code_table();
   init_distance_code_table();
 }
 
-void fixed_code_table::init_length_literal_code_table() {
+void FixedCodeTable::init_length_literal_code_table() {
   for (unsigned int code {0}; code <= 143; code++) {
     length_literal_code_table_[code] = {0b00110000 + code, 8};
   }
@@ -25,7 +25,7 @@ void fixed_code_table::init_length_literal_code_table() {
   }
 }
 
-void fixed_code_table::init_distance_code_table() {
+void FixedCodeTable::init_distance_code_table() {
   for (unsigned int code {0}; code <= 31; code++) {
     distance_code_table_[code] = {code, 5};
   }

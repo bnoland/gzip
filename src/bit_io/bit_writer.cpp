@@ -6,9 +6,9 @@
 
 namespace bit_io {
 
-bit_writer::bit_writer(std::ostream& output) : output_ {output} {}
+BitWriter::BitWriter(std::ostream& output) : output_ {output} {}
 
-void bit_writer::put_single_bit(bool value) {
+void BitWriter::put_single_bit(bool value) {
   current_byte_ |= (static_cast<uint8_t>(value) << current_bit_);
 
   ++current_bit_;
@@ -19,7 +19,7 @@ void bit_writer::put_single_bit(bool value) {
   }
 }
 
-void bit_writer::put_bits(uint64_t value, int num_bits, bool low_bit_first) {
+void BitWriter::put_bits(uint64_t value, int num_bits, bool low_bit_first) {
   assert(num_bits > 0 && num_bits <= 64);
 
   if (low_bit_first) {
@@ -33,13 +33,13 @@ void bit_writer::put_bits(uint64_t value, int num_bits, bool low_bit_first) {
   }
 }
 
-void bit_writer::pad_to_byte() {
+void BitWriter::pad_to_byte() {
   while (current_bit_ != 0) {
     put_single_bit(false);
   }
 }
 
-void bit_writer::finish() {
+void BitWriter::finish() {
   pad_to_byte();
 }
 

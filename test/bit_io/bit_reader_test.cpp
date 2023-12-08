@@ -15,7 +15,7 @@ void set_stream_bytes(std::istringstream& iss, std::initializer_list<uint8_t> by
 
 TEST_CASE("get_single_bit()", "[bit_reader][get_single_bit]") {
   std::istringstream iss {};
-  bit_io::bit_reader bit_reader {iss};
+  bit_io::BitReader bit_reader {iss};
 
   SECTION("Reads bits in correct order") {
     set_stream_bytes(iss, {0b00000101});
@@ -36,7 +36,7 @@ TEST_CASE("get_single_bit()", "[bit_reader][get_single_bit]") {
 
 TEST_CASE("get_bits()", "[bit_reader][get_bits]") {
   std::istringstream iss {};
-  bit_io::bit_reader bit_reader {iss};
+  bit_io::BitReader bit_reader {iss};
 
   SECTION("Read low bit first") {
     SECTION("Reads bits in correct order") {
@@ -75,7 +75,7 @@ TEST_CASE("get_bits()", "[bit_reader][get_bits]") {
 
 TEST_CASE("eof()", "[bit_reader][eof]") {
   std::istringstream iss {};
-  bit_io::bit_reader bit_reader {iss};
+  bit_io::BitReader bit_reader {iss};
 
   SECTION("Reading from empty stream yields EOF") {
     bit_reader.get_bits(1);

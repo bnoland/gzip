@@ -9,16 +9,16 @@
 
 namespace gzip {
 
-gzip_writer::gzip_writer(std::istream& input, std::ostream& output)
+GzipWriter::GzipWriter(std::istream& input, std::ostream& output)
     : input_ {input}, output_ {output}, bit_writer_ {output} {}
 
-void gzip_writer::write() {
+void GzipWriter::write() {
   write_header();
   write_deflate_bit_stream();
   write_footer();
 }
 
-void gzip_writer::write_header() {
+void GzipWriter::write_header() {
   const unsigned int MAGIC1 {0x1f};
   const unsigned int MAGIC2 {0x8b};
   const unsigned int COMPRESSION_METHOD {0x08};
@@ -37,7 +37,7 @@ void gzip_writer::write_header() {
   bit_writer_.put_bits(OPERATING_SYSTEM, 8);
 }
 
-void gzip_writer::write_deflate_bit_stream() {
+void GzipWriter::write_deflate_bit_stream() {
   while (true) {
     auto input_buffer {read_input_chunk()};
     input_size_ += input_buffer.length();
@@ -52,14 +52,14 @@ void gzip_writer::write_deflate_bit_stream() {
   }
 }
 
-void gzip_writer::write_footer() {
+void GzipWriter::write_footer() {
   bit_writer_.pad_to_byte();
   bit_writer_.put_bits(0, 32);  // XXX: Write CRC32.
   bit_writer_.put_bits(input_size_, 32);
   bit_writer_.finish();
 }
 
-std::string gzip_writer::read_input_chunk() {
+std::string GzipWriter::read_input_chunk() {
   std::string input_buffer {};
   char byte;
 
@@ -73,7 +73,7 @@ std::string gzip_writer::read_input_chunk() {
   return input_buffer;
 }
 
-void gzip_writer::write_block_type_0(std::string_view input_buffer, bool is_last_block) {
+void GzipWriter::write_block_type_0(std::string_view input_buffer, bool is_last_block) {
   const unsigned int MAX_BLOCK_LENGTH {65535};
   const unsigned int BLOCK_TYPE {0};
 
@@ -91,7 +91,7 @@ void gzip_writer::write_block_type_0(std::string_view input_buffer, bool is_last
   }
 }
 
-void gzip_writer::write_block_type_1(std::string_view input_buffer, bool is_last_block) {
+void GzipWriter::write_block_type_1(std::string_view input_buffer, bool is_last_block) {
   const unsigned int BLOCK_TYPE {1};
   bit_writer_.put_single_bit(is_last_block);
   bit_writer_.put_bits(BLOCK_TYPE, 2);
@@ -102,7 +102,7 @@ void gzip_writer::write_block_type_1(std::string_view input_buffer, bool is_last
   symbol_list.add(lzss::END_OF_BLOCK_MARKER);
 
   for (const auto& symbol : symbol_list) {
-    using enum lzss::lzss_symbol_type;
+    using enum lzss::LzssSymbolType;
 
     switch (symbol.get_type()) {
       case LITERAL:
@@ -130,7 +130,7 @@ void gzip_writer::write_block_type_1(std::string_view input_buffer, bool is_last
   }
 }
 
-void gzip_writer::write_block_type_2(std::string_view input_buffer, bool is_last_block) {
+void GzipWriter::write_block_type_2(std::string_view input_buffer, bool is_last_block) {
   const unsigned int BLOCK_TYPE {2};
   bit_writer_.put_single_bit(is_last_block);
   bit_writer_.put_bits(BLOCK_TYPE, 2);
@@ -145,7 +145,7 @@ void gzip_writer::write_block_type_2(std::string_view input_buffer, bool is_last
   std::vector<unsigned int> input_ll_codes {};
   std::vector<unsigned int> input_distance_codes {};
   for (auto symbol : symbol_list) {
-    using enum lzss::lzss_symbol_type;
+    using enum lzss::LzssSymbolType;
 
     if (symbol.get_type() == DISTANCE) {
       input_distance_codes.push_back(symbol.get_code());
@@ -175,10 +175,10 @@ void gzip_writer::write_block_type_2(std::string_view input_buffer, bool is_last
   // Compute separate prefix codes for length/literal symbols and distance symbols.
 
   const unsigned int MAX_LL_DISTANCE_CODE_LENGTH {15};
-  prefix_codes::prefix_code_encoder ll_encoder {MAX_LL_DISTANCE_CODE_LENGTH};
+  prefix_codes::PrefixCodeEncoder ll_encoder {MAX_LL_DISTANCE_CODE_LENGTH};
   ll_encoder.encode(input_ll_freqs);
   // XXX: Handle case when no distance symbols present.
-  prefix_codes::prefix_code_encoder distance_encoder {MAX_LL_DISTANCE_CODE_LENGTH};
+  prefix_codes::PrefixCodeEncoder distance_encoder {MAX_LL_DISTANCE_CODE_LENGTH};
   distance_encoder.encode(input_distance_freqs);
 
   // Put all the length/literal and distance code lengths into a contiguous buffer.
@@ -226,12 +226,12 @@ void gzip_writer::write_block_type_2(std::string_view input_buffer, bool is_last
 
   // Run-length encode the length/literal and distance length buffer.
 
-  struct cl_symbol {
+  struct ClSymbol {
     unsigned int code;
     unsigned int repeat_count {0};
   };
 
-  std::vector<cl_symbol> rle_output {};
+  std::vector<ClSymbol> rle_output {};
 
   unsigned int repeat_count {0};
   unsigned int i;
@@ -308,7 +308,7 @@ void gzip_writer::write_block_type_2(std::string_view input_buffer, bool is_last
   // Compute the CL codes.
 
   const unsigned int MAX_CL_CODE_LENGTH {7};
-  prefix_codes::prefix_code_encoder cl_encoder {MAX_CL_CODE_LENGTH};
+  prefix_codes::PrefixCodeEncoder cl_encoder {MAX_CL_CODE_LENGTH};
   cl_encoder.encode(ll_distance_code_length_freqs);
 
   // Put the CL code lengths into a contiguous buffer. The codes go into the buffer in a weird order.
@@ -367,7 +367,7 @@ void gzip_writer::write_block_type_2(std::string_view input_buffer, bool is_last
   auto distance_codes {distance_encoder.get_code_table()};
 
   for (const auto& symbol : symbol_list) {
-    using enum lzss::lzss_symbol_type;
+    using enum lzss::LzssSymbolType;
 
     switch (symbol.get_type()) {
       case LITERAL:

@@ -6,29 +6,29 @@
 
 namespace lzss {
 
-enum class lzss_symbol_type { LITERAL, LENGTH, DISTANCE };
+enum class LzssSymbolType { LITERAL, LENGTH, DISTANCE };
 
-class lzss_symbol {
+class LzssSymbol {
  public:
-  lzss_symbol(lzss_symbol_type type, unsigned int value);
+  LzssSymbol(LzssSymbolType type, unsigned int value);
 
   auto get_type() const { return type_; }
   auto get_value() const { return value_; }
 
   auto get_code() const { return code_; }
   auto get_extra_bits() const {
-    assert(type_ != lzss_symbol_type::LITERAL && "literals do not have extra bits");
+    assert(type_ != LzssSymbolType::LITERAL && "literals do not have extra bits");
     return extra_bits_;
   }
   auto get_offset() const {
-    assert(type_ != lzss_symbol_type::LITERAL && "literals do not have offsets");
+    assert(type_ != LzssSymbolType::LITERAL && "literals do not have offsets");
     return offset_;
   }
 
  private:
   void lookup_code_table_data();
 
-  const lzss_symbol_type type_;
+  const LzssSymbolType type_;
   const unsigned int value_;
 
   unsigned int code_;
@@ -36,11 +36,11 @@ class lzss_symbol {
   unsigned int offset_;
 };
 
-extern const lzss_symbol END_OF_BLOCK_MARKER;
+extern const LzssSymbol END_OF_BLOCK_MARKER;
 
-class lzss_symbol_list {
+class LzssSymbolList {
  public:
-  void add(const lzss_symbol& symbol);
+  void add(const LzssSymbol& symbol);
   void clear();
 
   std::string to_string() const;
@@ -49,7 +49,7 @@ class lzss_symbol_list {
   auto end() const { return list_.end(); }
 
  private:
-  std::vector<lzss_symbol> list_ {};
+  std::vector<LzssSymbol> list_ {};
 };
 
 }  // namespace lzss
