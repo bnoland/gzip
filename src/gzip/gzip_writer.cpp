@@ -2,6 +2,7 @@
 #include "lzss/lzss_symbol.hpp"
 #include "prefix_codes/prefix_code_encoder.hpp"
 
+#include <array>
 #include <cassert>
 #include <string>
 #include <string_view>
@@ -313,13 +314,14 @@ void GzipWriter::write_block_type_2(std::string_view input_buffer, bool is_last_
 
   // Put the CL code lengths into a contiguous buffer. The codes go into the buffer in a weird order.
 
-  const unsigned int CL_CODE_LENGTH_ORDER[] {16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15};
+  const std::array<unsigned int, 19> CL_CODE_LENGTH_ORDER {16, 17, 18, 0, 8,  7, 9,  6, 10, 5,
+                                                           11, 4,  12, 3, 13, 2, 14, 1, 15};
   auto cl_code_lengths {cl_encoder.get_code_length_table()};
 
   std::vector<unsigned int> cl_code_length_buffer {};
   unsigned int num_cl_codes {0};
 
-  for (unsigned int i {0}; i < std::size(CL_CODE_LENGTH_ORDER); i++) {
+  for (unsigned int i {0}; i < CL_CODE_LENGTH_ORDER.size(); i++) {
     unsigned int code {CL_CODE_LENGTH_ORDER[i]};
 
     if (cl_code_lengths.contains(code)) {

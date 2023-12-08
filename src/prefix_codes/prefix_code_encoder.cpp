@@ -1,6 +1,7 @@
 #include "prefix_codes/prefix_code_encoder.hpp"
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <cmath>
 #include <memory>
@@ -53,17 +54,15 @@ void PrefixCodeEncoder::compute_code_length_table(const FrequencyTable& frequenc
 }
 
 void PrefixCodeEncoder::compute_code_table() {
-  // XXX: Magic numbers...
-
-  unsigned int length_counts[15 + 1] {0};
+  std::array<unsigned int, MAX_CODE_LENGTH_VALUE + 1> length_counts {0};
   for (auto [symbol, length] : code_length_table_) {
     length_counts[length]++;
   }
 
-  unsigned int next_code[15 + 1];
+  std::array<unsigned int, MAX_CODE_LENGTH_VALUE + 1> next_code;
 
   unsigned int code {0};
-  for (unsigned int bits {1}; bits <= 15; bits++) {
+  for (unsigned int bits {1}; bits <= MAX_CODE_LENGTH_VALUE; bits++) {
     code = (code + length_counts[bits - 1]) << 1;
     next_code[bits] = code;
   }

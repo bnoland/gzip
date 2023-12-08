@@ -1,6 +1,5 @@
 #pragma once
 
-#include <limits>
 #include <memory>
 #include <optional>
 #include <unordered_map>
@@ -27,7 +26,7 @@ class PrefixCodeEncoder {
   using CodeTable = std::unordered_map<unsigned int, unsigned int>;
   using CodeLengthTable = std::map<unsigned int, unsigned int>;
 
-  static const unsigned int MAX_CODE_LENGTH_VALUE {std::numeric_limits<unsigned int>::digits};
+  static const unsigned int MAX_CODE_LENGTH_VALUE {15};
 
   const unsigned int max_code_length_;
   CodeLengthTable code_length_table_;

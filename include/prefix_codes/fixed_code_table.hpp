@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cassert>
 
 namespace prefix_codes {
@@ -15,11 +16,11 @@ class FixedCodeTable {
   };
 
   const auto& get_length_literal_entry(unsigned int code) const {
-    assert(code < NUM_LENGTH_LITERAL_CODES && "searching for invalid length/literal code in fixed code table");
+    assert(code < length_literal_code_table_.size() && "searching for invalid length/literal code in fixed code table");
     return length_literal_code_table_[code];
   }
   const auto& get_distance_entry(unsigned int code) const {
-    assert(code < NUM_DISTANCE_CODES && "searching for invalid distance code in fixed code table");
+    assert(code < distance_code_table_.size() && "searching for invalid distance code in fixed code table");
     return distance_code_table_[code];
   }
 
@@ -27,11 +28,8 @@ class FixedCodeTable {
   void init_length_literal_code_table();
   void init_distance_code_table();
 
-  static const unsigned int NUM_LENGTH_LITERAL_CODES {288};
-  static const unsigned int NUM_DISTANCE_CODES {32};
-
-  Entry length_literal_code_table_[NUM_LENGTH_LITERAL_CODES];
-  Entry distance_code_table_[NUM_DISTANCE_CODES];
+  std::array<Entry, 288> length_literal_code_table_;
+  std::array<Entry, 32> distance_code_table_;
 };
 
 }  // namespace prefix_codes
