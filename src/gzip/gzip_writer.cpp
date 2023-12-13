@@ -178,7 +178,6 @@ void GzipWriter::write_block_type_2(std::string_view input_buffer, bool is_last_
   const unsigned int MAX_LL_DISTANCE_CODE_LENGTH {15};
   prefix_codes::PrefixCodeEncoder ll_encoder {MAX_LL_DISTANCE_CODE_LENGTH};
   ll_encoder.encode(input_ll_freqs);
-  // XXX: Handle case when no distance symbols present.
   prefix_codes::PrefixCodeEncoder distance_encoder {MAX_LL_DISTANCE_CODE_LENGTH};
   distance_encoder.encode(input_distance_freqs);
 
