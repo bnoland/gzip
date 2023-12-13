@@ -100,7 +100,9 @@ executable(
 executable(
   'gunzip',
   sources: [
-    'src/cli/gunzip.cpp'
+    'src/cli/gunzip.cpp',
+    'src/gzip/gzip_reader.cpp',
+    'src/bit_io/bit_reader.cpp'
   ],
   include_directories : include_dir
 )

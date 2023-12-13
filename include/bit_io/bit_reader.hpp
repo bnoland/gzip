@@ -11,6 +11,7 @@ class BitReader {
 
   bool get_single_bit();
   uint64_t get_bits(int num_bits, bool low_bit_first = true);
+  void align_to_byte();
   bool eof() const;
 
  private:
