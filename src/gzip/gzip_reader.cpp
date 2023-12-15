@@ -43,9 +43,9 @@ void GzipReader::read_deflate_bit_stream() {
     // XXX: Read block of appropriate type based on value of `block_type`.
 
     // XXX: Sanity check. Remove later.
-    assert(block_type == 0);
+    assert(block_type == 1);
 
-    read_block_type_0();
+    read_block_type_1();
 
     if (is_last_block) {
       break;
@@ -67,5 +67,7 @@ void GzipReader::read_block_type_0() {
     output_.put(bit_reader_.get_bits(8));
   }
 }
+
+void GzipReader::read_block_type_1() {}
 
 }  // namespace gzip

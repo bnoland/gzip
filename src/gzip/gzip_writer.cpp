@@ -45,7 +45,7 @@ void GzipWriter::write_deflate_bit_stream() {
     bool is_last_block {input_.eof()};
 
     // XXX: Strategically choose block type.
-    write_block_type_0(input_buffer, is_last_block);
+    write_block_type_1(input_buffer, is_last_block);
 
     if (is_last_block) {
       break;

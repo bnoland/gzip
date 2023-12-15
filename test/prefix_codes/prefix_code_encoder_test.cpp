@@ -1,4 +1,5 @@
 #include "prefix_codes/prefix_code_encoder.hpp"
+#include "prefix_codes/prefix_code_types.hpp"
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
@@ -7,13 +8,11 @@
 // XXX: Check that assertions are thrown when preconditions are invalid.
 // I don't think Catch2 supports this. Might want to try out GoogleTest instead.
 
-using FrequencyTable = prefix_codes::PrefixCodeEncoder::FrequencyTable;
-
 TEST_CASE("Generates single code of length 1 when input has single symbol", "[prefix_code_encoder]") {
   // clang-format off
   auto [frequencies, max_code_length] = GENERATE(
-    std::make_tuple(FrequencyTable{{'a', 1}}, 1U),
-    std::make_tuple(FrequencyTable{{'a', 5}}, 1U)
+    std::make_tuple(prefix_codes::FrequencyTable{{'a', 1}}, 1U),
+    std::make_tuple(prefix_codes::FrequencyTable{{'a', 5}}, 1U)
   );
   // clang-format on
 
@@ -34,11 +33,11 @@ TEST_CASE("Generates single code of length 1 when input has single symbol", "[pr
 TEST_CASE("Generates valid code lengths when input has multiple symbols", "[prefix_code_encoder]") {
   // clang-format off
   auto [frequencies, max_code_length] = GENERATE(
-    std::make_tuple(FrequencyTable{{'a', 1}, {'b', 1}, {'c', 3}, {'d', 5}, {'e', 6}, {'f', 11}, {'g', 13}}, 3U),
-    std::make_tuple(FrequencyTable{{'a', 1}, {'b', 1}, {'c', 3}, {'d', 5}, {'e', 6}, {'f', 11}, {'g', 13}}, 4U),
-    std::make_tuple(FrequencyTable{{'a', 1}, {'b', 1}, {'c', 3}, {'d', 5}, {'e', 6}, {'f', 11}, {'g', 13}}, 5U),
-    std::make_tuple(FrequencyTable{{'a', 1}, {'b', 1}, {'c', 3}, {'d', 5}, {'e', 6}, {'f', 11}, {'g', 13}}, 15U),
-    std::make_tuple(FrequencyTable{{'a', 1}, {'b', 1}}, 1U)
+    std::make_tuple(prefix_codes::FrequencyTable{{'a', 1}, {'b', 1}, {'c', 3}, {'d', 5}, {'e', 6}, {'f', 11}, {'g', 13}}, 3U),
+    std::make_tuple(prefix_codes::FrequencyTable{{'a', 1}, {'b', 1}, {'c', 3}, {'d', 5}, {'e', 6}, {'f', 11}, {'g', 13}}, 4U),
+    std::make_tuple(prefix_codes::FrequencyTable{{'a', 1}, {'b', 1}, {'c', 3}, {'d', 5}, {'e', 6}, {'f', 11}, {'g', 13}}, 5U),
+    std::make_tuple(prefix_codes::FrequencyTable{{'a', 1}, {'b', 1}, {'c', 3}, {'d', 5}, {'e', 6}, {'f', 11}, {'g', 13}}, 15U),
+    std::make_tuple(prefix_codes::FrequencyTable{{'a', 1}, {'b', 1}}, 1U)
   );
   // clang-format on
 

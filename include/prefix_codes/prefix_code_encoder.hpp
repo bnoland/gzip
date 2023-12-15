@@ -1,10 +1,10 @@
 #pragma once
 
+#include "prefix_codes/prefix_code_types.hpp"
+
 #include <memory>
 #include <optional>
-#include <unordered_map>
 #include <vector>
-#include <map>
 
 namespace prefix_codes {
 
@@ -12,26 +12,12 @@ class PrefixCodeEncoder {
  public:
   PrefixCodeEncoder(unsigned int max_code_length);
 
-  using FrequencyTable = std::unordered_map<unsigned int, unsigned int>;
-
   void encode(const FrequencyTable& frequencies);
 
   const auto& get_code_table() const { return code_table_; }
   const auto& get_code_length_table() const { return code_length_table_; }
 
  private:
-  void compute_code_length_table(const FrequencyTable& frequencies);
-  void compute_code_table();
-
-  using CodeTable = std::unordered_map<unsigned int, unsigned int>;
-  using CodeLengthTable = std::map<unsigned int, unsigned int>;
-
-  static const unsigned int MAX_CODE_LENGTH_VALUE {15};
-
-  const unsigned int max_code_length_;
-  CodeLengthTable code_length_table_;
-  CodeTable code_table_;
-
   struct PackageNode;
   using PackageNodePtr = std::shared_ptr<PackageNode>;
   using PackageList = std::vector<PackageNodePtr>;
@@ -43,9 +29,16 @@ class PrefixCodeEncoder {
     PackageNodePtr right {nullptr};
   };
 
+  void compute_code_length_table(const FrequencyTable& frequencies);
+  void compute_code_table();
+
   void expand_package(PackageNodePtr package);
   static PackageList package(const PackageList& list);
   static PackageList merge(const PackageList& list1, const PackageList& list2);
+
+  const unsigned int max_code_length_;
+  CodeLengthTable code_length_table_;
+  CodeTable code_table_;
 };
 
 }  // namespace prefix_codes

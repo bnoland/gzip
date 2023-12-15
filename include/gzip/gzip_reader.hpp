@@ -21,6 +21,7 @@ class GzipReader {
   void read_footer();
 
   void read_block_type_0();
+  void read_block_type_1();
 
   std::istream& input_;
   std::ostream& output_;
