@@ -9,8 +9,9 @@ struct Entry {
   unsigned int upper_bound;
 };
 
-const Entry& get_length_entry(unsigned int length);
-
-const Entry& get_distance_entry(unsigned int distance);
+const Entry& get_length_entry_by_code(unsigned int code);
+const Entry& get_distance_entry_by_code(unsigned int code);
+const Entry& get_length_entry_by_length(unsigned int length);
+const Entry& get_distance_entry_by_distance(unsigned int distance);
 
 }  // namespace lzss::code_tables

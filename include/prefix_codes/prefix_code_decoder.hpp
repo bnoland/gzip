@@ -11,8 +11,9 @@ namespace prefix_codes {
 
 class PrefixCodeDecoder {
  public:
-  PrefixCodeDecoder(bit_io::BitReader bit_reader, const CodeLengthTable& code_length_table);
+  PrefixCodeDecoder(bit_io::BitReader& bit_reader, const CodeLengthTable& code_length_table);
 
+  void initialize();
   unsigned int decode_symbol();
 
  private:
@@ -32,7 +33,7 @@ class PrefixCodeDecoder {
   NodePtr tree_root_;
   CodeTable code_table_;
   const CodeLengthTable& code_length_table_;
-  bit_io::BitReader bit_reader_;
+  bit_io::BitReader& bit_reader_;
 };
 
 class DecodingError : public std::exception {

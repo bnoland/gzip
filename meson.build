@@ -125,6 +125,7 @@ executable(
     'src/bit_io/bit_reader.cpp',
     'src/prefix_codes/prefix_code_decoder.cpp',
     'src/prefix_codes/canonical_codes.cpp',
+    'src/lzss/lzss_code_tables.cpp',
   ],
   include_directories: include_dir,
 )

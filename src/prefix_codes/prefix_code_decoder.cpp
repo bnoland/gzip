@@ -6,8 +6,10 @@
 
 namespace prefix_codes {
 
-PrefixCodeDecoder::PrefixCodeDecoder(bit_io::BitReader bit_reader, const CodeLengthTable& code_length_table)
-    : code_length_table_ {code_length_table}, bit_reader_ {bit_reader} {
+PrefixCodeDecoder::PrefixCodeDecoder(bit_io::BitReader& bit_reader, const CodeLengthTable& code_length_table)
+    : code_length_table_ {code_length_table}, bit_reader_ {bit_reader} {}
+
+void PrefixCodeDecoder::initialize() {
   compute_code_table();
   build_tree();
 }
