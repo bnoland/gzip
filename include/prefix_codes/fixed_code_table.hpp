@@ -5,7 +5,6 @@
 
 namespace prefix_codes {
 
-// XXX: Does this even need to be a class?
 class FixedCodeTable {
  public:
   FixedCodeTable();

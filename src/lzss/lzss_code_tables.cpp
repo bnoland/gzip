@@ -31,24 +31,46 @@ const std::array DISTANCE_CODE_TABLE {
 
 }  // namespace
 
-const Entry& get_length_entry(unsigned int length) {
+const Entry& get_length_entry_by_code(unsigned int code) {
+  // XXX: Could use a hash table here.
+  for (const auto& entry : LENGTH_CODE_TABLE) {
+    if (entry.code == code) {
+      return entry;
+    }
+  }
+
+  assert(false && "searching for invalid code in length/literal code table");
+}
+
+const Entry& get_distance_entry_by_code(unsigned int code) {
+  // XXX: Could use a hash table here.
+  for (const auto& entry : DISTANCE_CODE_TABLE) {
+    if (entry.code == code) {
+      return entry;
+    }
+  }
+
+  assert(false && "searching for invalid code in distance code table");
+}
+
+const Entry& get_length_entry_by_length(unsigned int length) {
   for (const auto& entry : LENGTH_CODE_TABLE) {
     if (length >= entry.lower_bound && length <= entry.upper_bound) {
       return entry;
     }
   }
 
-  assert(false && "searching for invalid length in code table");
+  assert(false && "searching for invalid length in length/literal code table");
 }
 
-const Entry& get_distance_entry(unsigned int distance) {
+const Entry& get_distance_entry_by_distance(unsigned int distance) {
   for (const auto& entry : DISTANCE_CODE_TABLE) {
     if (distance >= entry.lower_bound && distance <= entry.upper_bound) {
       return entry;
     }
   }
 
-  assert(false && "searching for invalid distance in code table");
+  assert(false && "searching for invalid distance in distance code table");
 }
 
 }  // namespace lzss::code_tables

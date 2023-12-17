@@ -1,19 +1,16 @@
 #include "prefix_codes/prefix_code_encoder.hpp"
+#include "prefix_codes/canonical_codes.hpp"
 
 #include <algorithm>
-#include <array>
 #include <cassert>
 #include <cmath>
 #include <memory>
 #include <optional>
 #include <map>
-#include <unordered_map>
 
 namespace prefix_codes {
 
-PrefixCodeEncoder::PrefixCodeEncoder(unsigned int max_code_length) : max_code_length_ {max_code_length} {
-  assert(max_code_length <= MAX_CODE_LENGTH_VALUE && "max code length is too large");
-}
+PrefixCodeEncoder::PrefixCodeEncoder(unsigned int max_code_length) : max_code_length_ {max_code_length} {}
 
 void PrefixCodeEncoder::encode(const FrequencyTable& frequencies) {
   compute_code_length_table(frequencies);
@@ -54,23 +51,7 @@ void PrefixCodeEncoder::compute_code_length_table(const FrequencyTable& frequenc
 }
 
 void PrefixCodeEncoder::compute_code_table() {
-  std::array<unsigned int, MAX_CODE_LENGTH_VALUE + 1> length_counts {0};
-  for (auto [symbol, length] : code_length_table_) {
-    length_counts[length]++;
-  }
-
-  std::array<unsigned int, MAX_CODE_LENGTH_VALUE + 1> next_code;
-
-  unsigned int code {0};
-  for (unsigned int bits {1}; bits <= MAX_CODE_LENGTH_VALUE; bits++) {
-    code = (code + length_counts[bits - 1]) << 1;
-    next_code[bits] = code;
-  }
-
-  for (auto [symbol, length] : code_length_table_) {
-    code_table_.insert({symbol, next_code[length]});
-    next_code[length]++;
-  }
+  code_table_ = compute_canonical_code_table(code_length_table_);
 }
 
 void PrefixCodeEncoder::expand_package(PackageNodePtr package) {

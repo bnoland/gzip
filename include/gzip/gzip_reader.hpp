@@ -1,7 +1,10 @@
 #pragma once
 
 #include "bit_io/bit_reader.hpp"
+#include "prefix_codes/prefix_code_decoder.hpp"
+#include "prefix_codes/prefix_code_types.hpp"
 
+#include <deque>
 #include <string>
 #include <exception>
 #include <istream>
@@ -21,10 +24,22 @@ class GzipReader {
   void read_footer();
 
   void read_block_type_0();
+  void read_block_type_1();
+  void read_block_type_2();
+
+  // XXX: All this stuff should go elsewhere.
+  void compute_fixed_code_tables();
+  prefix_codes::CodeLengthTable fixed_ll_code_lengths_ {};
+  prefix_codes::CodeLengthTable fixed_distance_code_lengths_ {};
+  prefix_codes::PrefixCodeDecoder fixed_ll_code_decoder_ {bit_reader_, fixed_ll_code_lengths_};
+  prefix_codes::PrefixCodeDecoder fixed_distance_code_decoder_ {bit_reader_, fixed_distance_code_lengths_};
 
   std::istream& input_;
   std::ostream& output_;
   bit_io::BitReader bit_reader_;
+
+  // XXX: This should be managed by an LZSS decoder class.
+  std::deque<unsigned int> history_ {};
 };
 
 class GzipReaderError : public std::exception {

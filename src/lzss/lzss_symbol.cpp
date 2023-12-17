@@ -30,14 +30,14 @@ void LzssSymbol::lookup_code_table_data() {
       code_ = value_;
       break;
     case LENGTH: {
-      auto entry {code_tables::get_length_entry(value_)};
+      auto entry {code_tables::get_length_entry_by_length(value_)};
       code_ = entry.code;
       extra_bits_ = entry.extra_bits;
       offset_ = value_ - entry.lower_bound;
       break;
     }
     case DISTANCE: {
-      auto entry {code_tables::get_distance_entry(value_)};
+      auto entry {code_tables::get_distance_entry_by_distance(value_)};
       code_ = entry.code;
       extra_bits_ = entry.extra_bits;
       offset_ = value_ - entry.lower_bound;
