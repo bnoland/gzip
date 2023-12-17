@@ -45,7 +45,7 @@ void GzipWriter::write_deflate_bit_stream() {
     bool is_last_block {input_.eof()};
 
     // XXX: Strategically choose block type.
-    write_block_type_1(input_buffer, is_last_block);
+    write_block_type_2(input_buffer, is_last_block);
 
     if (is_last_block) {
       break;
@@ -340,8 +340,7 @@ void GzipWriter::write_block_type_2(std::string_view input_buffer, bool is_last_
   // Write the CL code length table.
 
   for (unsigned int i {0}; i < num_cl_codes; i++) {
-    auto length {cl_code_length_buffer[i]};
-    bit_writer_.put_bits(length, 3);
+    bit_writer_.put_bits(cl_code_length_buffer[i], 3);
   }
 
   // Write the length/literal and distance code length tables.

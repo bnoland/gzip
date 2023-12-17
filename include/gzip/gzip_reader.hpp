@@ -25,6 +25,7 @@ class GzipReader {
 
   void read_block_type_0();
   void read_block_type_1();
+  void read_block_type_2();
 
   // XXX: All this stuff should go elsewhere.
   void compute_fixed_code_tables();

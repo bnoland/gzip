@@ -2,6 +2,7 @@
 #include "prefix_codes/prefix_code_types.hpp"
 
 #include <array>
+#include <cassert>
 
 namespace prefix_codes {
 
@@ -10,6 +11,7 @@ CodeTable compute_canonical_code_table(const CodeLengthTable& code_length_table)
 
   std::array<unsigned int, MAX_CODE_LENGTH_VALUE + 1> length_counts {0};
   for (auto [symbol, length] : code_length_table) {
+    assert(length <= MAX_CODE_LENGTH_VALUE);
     length_counts[length]++;
   }
 
@@ -24,6 +26,7 @@ CodeTable compute_canonical_code_table(const CodeLengthTable& code_length_table)
   CodeTable code_table {};
 
   for (auto [symbol, length] : code_length_table) {
+    assert(length <= MAX_CODE_LENGTH_VALUE);
     code_table.insert({symbol, next_code[length]});
     next_code[length]++;
   }
