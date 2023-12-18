@@ -6,16 +6,19 @@
 
 namespace prefix_codes {
 
-PrefixCodeDecoder::PrefixCodeDecoder(bit_io::BitReader& bit_reader, const CodeLengthTable& code_length_table)
-    : code_length_table_ {code_length_table}, bit_reader_ {bit_reader} {}
+PrefixCodeDecoder::PrefixCodeDecoder(bit_io::BitReader &bit_reader, const CodeLengthTable &code_length_table)
+  : code_length_table_{ code_length_table }, bit_reader_{ bit_reader }
+{}
 
-void PrefixCodeDecoder::initialize() {
+void PrefixCodeDecoder::initialize()
+{
   compute_code_table();
   build_tree();
 }
 
-unsigned int PrefixCodeDecoder::decode_symbol() {
-  NodePtr current {tree_root_};
+unsigned int PrefixCodeDecoder::decode_symbol()
+{
+  NodePtr current{ tree_root_ };
   while (true) {
     if (current == nullptr) {
       throw DecodingError("Unable to decode symbol.");
@@ -25,7 +28,7 @@ unsigned int PrefixCodeDecoder::decode_symbol() {
       return current->symbol.value();
     }
 
-    bool bit {bit_reader_.get_single_bit()};
+    bool bit{ bit_reader_.get_single_bit() };
     if (bit_reader_.eof()) {
       throw DecodingError("Reached end of input while decoding.");
     }
@@ -38,26 +41,29 @@ unsigned int PrefixCodeDecoder::decode_symbol() {
   }
 }
 
-void PrefixCodeDecoder::compute_code_table() {
+void PrefixCodeDecoder::compute_code_table()
+{
   code_table_ = compute_canonical_code_table(code_length_table_);
 }
 
-void PrefixCodeDecoder::build_tree() {
+void PrefixCodeDecoder::build_tree()
+{
   for (auto [symbol, code] : code_table_) {
     insert_symbol(symbol, code);
   }
 }
 
-void PrefixCodeDecoder::insert_symbol(unsigned int symbol, unsigned int code) {
+void PrefixCodeDecoder::insert_symbol(unsigned int symbol, unsigned int code)
+{
   if (tree_root_ == nullptr) {
     tree_root_ = std::make_shared<Node>(symbol);
   }
 
-  NodePtr current {tree_root_};
-  unsigned int length {code_length_table_.at(symbol)};
+  NodePtr current{ tree_root_ };
+  unsigned int length{ code_length_table_.at(symbol) };
 
   for (int bit = length - 1; bit >= 0; bit--) {
-    unsigned int mask {1U << bit};
+    unsigned int mask{ 1U << bit };
     if (code & mask) {
       if (current->right == nullptr) {
         current->right = std::make_shared<Node>();

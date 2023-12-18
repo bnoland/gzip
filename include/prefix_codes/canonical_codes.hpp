@@ -4,6 +4,6 @@
 
 namespace prefix_codes {
 
-CodeTable compute_canonical_code_table(const CodeLengthTable& code_length_table);
+CodeTable compute_canonical_code_table(const CodeLengthTable &code_length_table);
 
 }

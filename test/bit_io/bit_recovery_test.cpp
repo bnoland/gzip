@@ -5,12 +5,13 @@
 #include <cstdint>
 #include <sstream>
 
-TEST_CASE("Can read back written bits", "[bit_writer][bit_reader]") {
-  std::ostringstream oss {};
-  bit_io::BitWriter bit_writer {oss};
+TEST_CASE("Can read back written bits", "[bit_writer][bit_reader]")
+{
+  std::ostringstream oss{};
+  bit_io::BitWriter bit_writer{ oss };
 
-  std::istringstream iss {};
-  bit_io::BitReader bit_reader {iss};
+  std::istringstream iss{};
+  bit_io::BitReader bit_reader{ iss };
 
   // XXX: Can we improve how this lambda function is written?
   auto recover_bits = [&](uint64_t value, int num_bits, bool low_bit_first = true) {
@@ -19,25 +20,31 @@ TEST_CASE("Can read back written bits", "[bit_writer][bit_reader]") {
     iss.str(oss.str());
   };
 
-  SECTION("Read and write low bit first") {
-    SECTION("Bits written and read in correct order") {
+  SECTION("Read and write low bit first")
+  {
+    SECTION("Bits written and read in correct order")
+    {
       recover_bits(0b1011, 2);
       REQUIRE(bit_reader.get_bits(2) == 0b0011);
     }
 
-    SECTION("Bits written and read as unsigned integer") {
+    SECTION("Bits written and read as unsigned integer")
+    {
       recover_bits(0xffffffff, 32);
       REQUIRE(bit_reader.get_bits(32) == 0xffffffff);
     }
   }
 
-  SECTION("Read and write high bit first") {
-    SECTION("Bits written and read in correct order") {
+  SECTION("Read and write high bit first")
+  {
+    SECTION("Bits written and read in correct order")
+    {
       recover_bits(0b1110, 2, false);
       REQUIRE(bit_reader.get_bits(2, false) == 0b10);
     }
 
-    SECTION("Bits written and read as unsigned integer") {
+    SECTION("Bits written and read as unsigned integer")
+    {
       recover_bits(0xffffffff, 32, false);
       REQUIRE(bit_reader.get_bits(32, false) == 0xffffffff);
     }

@@ -7,22 +7,24 @@
 
 namespace lzss {
 
-const LzssSymbol END_OF_BLOCK_MARKER {LzssSymbolType::LITERAL, 256};
+const LzssSymbol END_OF_BLOCK_MARKER{ LzssSymbolType::LITERAL, 256 };
 
-LzssSymbol::LzssSymbol(LzssSymbolType type, unsigned int value) : type_ {type}, value_ {value} {
+LzssSymbol::LzssSymbol(LzssSymbolType type, unsigned int value) : type_{ type }, value_{ value }
+{
   assert(!(type == LzssSymbolType::LITERAL && value > 256) && "trying to create invalid literal");
 
-  assert(!(type == LzssSymbolType::LENGTH &&
-           (value < constants::MIN_BACKREF_LENGTH || value > constants::MAX_BACKREF_LENGTH)) &&
-         "trying to create invalid length");
+  assert(!(type == LzssSymbolType::LENGTH
+           && (value < constants::MIN_BACKREF_LENGTH || value > constants::MAX_BACKREF_LENGTH))
+         && "trying to create invalid length");
 
-  assert(!(type == LzssSymbolType::DISTANCE && value > constants::MAX_BACKREF_DISTANCE) &&
-         "trying to create invalid distance");
+  assert(!(type == LzssSymbolType::DISTANCE && value > constants::MAX_BACKREF_DISTANCE)
+         && "trying to create invalid distance");
 
   lookup_code_table_data();
 }
 
-void LzssSymbol::lookup_code_table_data() {
+void LzssSymbol::lookup_code_table_data()
+{
   switch (type_) {
     using enum LzssSymbolType;
 
@@ -30,14 +32,14 @@ void LzssSymbol::lookup_code_table_data() {
       code_ = value_;
       break;
     case LENGTH: {
-      auto entry {code_tables::get_length_entry_by_length(value_)};
+      auto entry{ code_tables::get_length_entry_by_length(value_) };
       code_ = entry.code;
       extra_bits_ = entry.extra_bits;
       offset_ = value_ - entry.lower_bound;
       break;
     }
     case DISTANCE: {
-      auto entry {code_tables::get_distance_entry_by_distance(value_)};
+      auto entry{ code_tables::get_distance_entry_by_distance(value_) };
       code_ = entry.code;
       extra_bits_ = entry.extra_bits;
       offset_ = value_ - entry.lower_bound;
@@ -46,18 +48,21 @@ void LzssSymbol::lookup_code_table_data() {
   }
 }
 
-void LzssSymbolList::add(const LzssSymbol& symbol) {
+void LzssSymbolList::add(const LzssSymbol &symbol)
+{
   list_.push_back(symbol);
 }
 
-void LzssSymbolList::clear() {
+void LzssSymbolList::clear()
+{
   list_.clear();
 }
 
-std::string LzssSymbolList::to_string() const {
-  std::string result {};
+std::string LzssSymbolList::to_string() const
+{
+  std::string result{};
 
-  for (const auto& symbol : list_) {
+  for (const auto &symbol : list_) {
     switch (symbol.get_type()) {
       using enum LzssSymbolType;
 

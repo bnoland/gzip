@@ -8,13 +8,15 @@
 
 namespace lzss {
 
-struct BackReference {
+struct BackReference
+{
   unsigned int position;
   unsigned int length;
 };
 
-class LzssStringTable {
- public:
+class LzssStringTable
+{
+public:
   LzssStringTable(unsigned int max_chain_length = 10);
 
   void insert(std::string_view string, unsigned int position);
@@ -23,17 +25,18 @@ class LzssStringTable {
   unsigned int get_average_chain_length() const;
   std::string to_string() const;
 
- private:
+private:
   std::size_t get_chain_index(std::string_view string) const;
 
-  struct Entry {
+  struct Entry
+  {
     std::string string;
     unsigned int position;
   };
 
-  static const unsigned int MAX_CHAINS {65536};
+  static const unsigned int MAX_CHAINS{ 65536 };
   std::list<Entry> chains_[MAX_CHAINS];
-  std::hash<std::string> hash_ {};
+  std::hash<std::string> hash_{};
   const unsigned int max_chain_length_;
 };
 

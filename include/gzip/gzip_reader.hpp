@@ -5,20 +5,21 @@
 #include "prefix_codes/prefix_code_types.hpp"
 
 #include <deque>
-#include <string>
 #include <exception>
 #include <istream>
 #include <ostream>
+#include <string>
 
 namespace gzip {
 
-class GzipReader {
- public:
-  GzipReader(std::istream& input, std::ostream& output);
+class GzipReader
+{
+public:
+  GzipReader(std::istream &input, std::ostream &output);
 
   void read();
 
- private:
+private:
   void read_header();
   void read_deflate_bit_stream();
   void read_footer();
@@ -29,26 +30,27 @@ class GzipReader {
 
   // XXX: All this stuff should go elsewhere.
   void compute_fixed_code_tables();
-  prefix_codes::CodeLengthTable fixed_ll_code_lengths_ {};
-  prefix_codes::CodeLengthTable fixed_distance_code_lengths_ {};
-  prefix_codes::PrefixCodeDecoder fixed_ll_code_decoder_ {bit_reader_, fixed_ll_code_lengths_};
-  prefix_codes::PrefixCodeDecoder fixed_distance_code_decoder_ {bit_reader_, fixed_distance_code_lengths_};
+  prefix_codes::CodeLengthTable fixed_ll_code_lengths_{};
+  prefix_codes::CodeLengthTable fixed_distance_code_lengths_{};
+  prefix_codes::PrefixCodeDecoder fixed_ll_code_decoder_{ bit_reader_, fixed_ll_code_lengths_ };
+  prefix_codes::PrefixCodeDecoder fixed_distance_code_decoder_{ bit_reader_, fixed_distance_code_lengths_ };
 
-  std::istream& input_;
-  std::ostream& output_;
+  std::istream &input_;
+  std::ostream &output_;
   bit_io::BitReader bit_reader_;
 
   // XXX: This should be managed by an LZSS decoder class.
-  std::deque<unsigned int> history_ {};
+  std::deque<unsigned int> history_{};
 };
 
-class GzipReaderError : public std::exception {
- public:
-  GzipReaderError(const std::string& message) : message_ {message} {}
+class GzipReaderError : public std::exception
+{
+public:
+  GzipReaderError(const std::string &message) : message_{ message } {}
 
-  const char* what() const noexcept { return message_.c_str(); }
+  const char *what() const noexcept { return message_.c_str(); }
 
- private:
+private:
   const std::string message_;
 };
 

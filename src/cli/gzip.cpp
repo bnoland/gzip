@@ -2,6 +2,7 @@
 
 #include <iostream>
 
-int main() {
-  gzip::GzipWriter {std::cin, std::cout}.write();
+int main()
+{
+  gzip::GzipWriter{ std::cin, std::cout }.write();
 }

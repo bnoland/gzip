@@ -5,25 +5,29 @@
 
 namespace prefix_codes {
 
-class FixedCodeTable {
- public:
+class FixedCodeTable
+{
+public:
   FixedCodeTable();
 
-  struct Entry {
+  struct Entry
+  {
     unsigned int prefix_code;
     unsigned int num_bits;
   };
 
-  const auto& get_length_literal_entry(unsigned int code) const {
+  const auto &get_length_literal_entry(unsigned int code) const
+  {
     assert(code < length_literal_code_table_.size() && "searching for invalid length/literal code in fixed code table");
     return length_literal_code_table_[code];
   }
-  const auto& get_distance_entry(unsigned int code) const {
+  const auto &get_distance_entry(unsigned int code) const
+  {
     assert(code < distance_code_table_.size() && "searching for invalid distance code in fixed code table");
     return distance_code_table_[code];
   }
 
- private:
+private:
   void init_length_literal_code_table();
   void init_distance_code_table();
 

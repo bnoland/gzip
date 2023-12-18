@@ -9,21 +9,23 @@
 
 namespace prefix_codes {
 
-class PrefixCodeDecoder {
- public:
-  PrefixCodeDecoder(bit_io::BitReader& bit_reader, const CodeLengthTable& code_length_table);
+class PrefixCodeDecoder
+{
+public:
+  PrefixCodeDecoder(bit_io::BitReader &bit_reader, const CodeLengthTable &code_length_table);
 
   void initialize();
   unsigned int decode_symbol();
 
- private:
+private:
   struct Node;
   using NodePtr = std::shared_ptr<Node>;
 
-  struct Node {
+  struct Node
+  {
     std::optional<unsigned int> symbol;
-    NodePtr left {nullptr};
-    NodePtr right {nullptr};
+    NodePtr left{ nullptr };
+    NodePtr right{ nullptr };
   };
 
   void compute_code_table();
@@ -32,17 +34,18 @@ class PrefixCodeDecoder {
 
   NodePtr tree_root_;
   CodeTable code_table_;
-  const CodeLengthTable& code_length_table_;
-  bit_io::BitReader& bit_reader_;
+  const CodeLengthTable &code_length_table_;
+  bit_io::BitReader &bit_reader_;
 };
 
-class DecodingError : public std::exception {
- public:
-  DecodingError(const std::string& message) : message_ {message} {}
+class DecodingError : public std::exception
+{
+public:
+  DecodingError(const std::string &message) : message_{ message } {}
 
-  const char* what() const noexcept { return message_.c_str(); }
+  const char *what() const noexcept { return message_.c_str(); }
 
- private:
+private:
   const std::string message_;
 };
 
